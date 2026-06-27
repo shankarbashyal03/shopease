@@ -7,6 +7,7 @@
     <title>Checkout - ShopEase</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         :root{--primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#f59e0b;--dark:#0f172a;--dark-light:#1e293b;--light:#f8fafc;--gray:#64748b;--gray-light:#e2e8f0;--success:#16a34a;--danger:#dc2626;--warning:#f59e0b;--radius:12px;--radius-sm:8px;--shadow:0 4px 20px rgba(0,0,0,0.1);--transition:all 0.3s ease}
         *{margin:0;padding:0;box-sizing:border-box}
@@ -72,16 +73,16 @@
                     <div class="form-group"><label>Landmark <span class="optional">(Optional)</span></label><input type="text" id="landmark"></div>
                     <div class="form-group"><label>Delivery Instructions <span class="optional">(Optional)</span></label><textarea id="instructions"></textarea></div>
                 </div>
+
                 <div class="checkout-form">
                     <h2><i class="fas fa-credit-card"></i> Payment Method</h2>
                     <div class="payment-methods">
-                        <label class="payment-option selected" id="cardOption"><input type="radio" name="paymentMethod" value="card" checked onchange="selectPayment('card')"><i class="fab fa-cc-visa"></i><div class="payment-option-content"><strong>Credit / Debit Card</strong><small>Visa, Mastercard, Amex</small></div></label>
-                        <label class="payment-option" id="applePayOption"><input type="radio" name="paymentMethod" value="applepay" onchange="selectPayment('applepay')"><i class="fab fa-apple-pay"></i><div class="payment-option-content"><strong>Apple Pay</strong><small>Fast & secure</small></div></label>
-                        <label class="payment-option" id="gpayOption"><input type="radio" name="paymentMethod" value="googlepay" onchange="selectPayment('googlepay')"><i class="fab fa-google-pay"></i><div class="payment-option-content"><strong>Google Pay</strong><small>Fast & secure</small></div></label>
+                        <label class="payment-option selected" id="cardOption"><input type="radio" name="paymentMethod" value="card" checked onchange="selectPayment('card')"><i class="fab fa-cc-visa"></i><div class="payment-option-content"><strong>Credit / Debit Card</strong><small>Pay securely with Stripe</small></div></label>
                         <label class="payment-option" id="codOption"><input type="radio" name="paymentMethod" value="cod" onchange="selectPayment('cod')"><i class="fas fa-money-bill-wave"></i><div class="payment-option-content"><strong>Cash on Delivery</strong><small>Pay when you receive</small><span class="cod-fee"> +AED 20 COD fee</span></div></label>
                     </div>
                 </div>
             </div>
+
             <div class="order-summary">
                 <h3>Order Summary</h3>
                 <div id="cartMiniItems"></div>
@@ -90,15 +91,17 @@
                 <div class="summary-row"><span>Shipping</span><span style="color:var(--success)">FREE</span></div>
                 <div class="summary-row cod" id="codFeeRow" style="display:none"><span>COD Fee</span><span id="codFee">+AED 20</span></div>
                 <div class="summary-row total"><span>Total</span><span id="summaryTotal">AED 0</span></div>
-                <button class="pay-btn" id="payButton" onclick="processPayment()"><i class="fas fa-lock"></i> <span id="payButtonText">Pay Now</span></button>
+                <button class="pay-btn" id="payButton" onclick="processPayment()"><i class="fas fa-lock"></i> <span id="payButtonText">Pay with Card</span></button>
                 <a href="cart.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Cart</a>
             </div>
         </div>
     </div>
+
     <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"><div class="spinner"></div><p id="loadingText">Processing...</p></div></div>
 
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQwpj3z0y9sVujNmWiTHlzpfNt9F1TeIvPdE2sv_t4qe62rBuW75n2s09r9WAkFYorZA/exec';
+        const STRIPE_PUBLISHABLE_KEY = 'pk_live_51TgmgV3nss3O6WFl9T1GgTyoH1NL66svOsK6IvYRXfYbGxRsbjprw4UGfZ1tMcSGeJzdXH4qKwQ8ebpFLyd5FGwC00tPzgxQHA';
         
         const UAE_DATA = {
             "Abu Dhabi":{cities:["Abu Dhabi City","Al Ain","Al Dhafra"],areas:{"Abu Dhabi City":["Al Reem Island","Al Raha","Khalifa City","MBZ City","Mussafah","Yas Island","Saadiyat Island","Baniyas"],"Al Ain":["Al Ain City","Al Jimi"],"Al Dhafra":["Ruwais","Madinat Zayed"]}},
@@ -120,48 +123,158 @@
             renderCartMini();
         });
 
-        function updateCities(){const e=document.getElementById('emirate').value,c=document.getElementById('city'),a=document.getElementById('area');c.innerHTML='<option value="">Select City</option>';a.innerHTML='<option value="">Select Area</option>';if(e&&UAE_DATA[e])UAE_DATA[e].cities.forEach(city=>{c.innerHTML+=`<option>${city}</option>`})}
-        function updateAreas(){const e=document.getElementById('emirate').value,c=document.getElementById('city').value,a=document.getElementById('area');a.innerHTML='<option value="">Select Area</option>';if(e&&c&&UAE_DATA[e]&&UAE_DATA[e].areas[c])UAE_DATA[e].areas[c].forEach(ar=>{a.innerHTML+=`<option>${ar}</option>`})}
-        function selectPayment(m){selectedPayment=m;document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected'));document.getElementById(m+'Option').classList.add('selected');document.getElementById('codFeeRow').style.display=(m==='cod')?'flex':'none';document.getElementById('payButtonText').textContent=m==='cod'?'Place Order (COD)':'Pay Now';renderCartMini()}
-        function fixImageUrl(u){if(!u)return'https://placehold.co/50x50/1e293b/ffffff?text=Item';if(u.includes('drive.google.com/uc')){const id=u.split('id=')[1];if(id)return'https://drive.google.com/thumbnail?id='+id+'&sz=w100'}return u}
-        
-        function renderCartMini(){
-            const co=document.getElementById('cartMiniItems');let s=0;
-            co.innerHTML=cart.map(item=>{const it=item.price*item.quantity;s+=it;const img=fixImageUrl(item.image);return`<div class="cart-mini-item"><img src="${img}" alt="${item.name}" onerror="this.src='https://placehold.co/50x50/1e293b/ffffff?text=Item'"><div class="cart-mini-details"><div class="name">${item.name}</div><div class="qty">Qty: ${item.quantity}</div><div class="price">AED ${it.toLocaleString()}</div></div></div>`}).join('');
-            let pd=0;if(appliedPromo&&appliedPromo.active){const ids=appliedPromo.excluded_products?appliedPromo.excluded_products.split(',').map(id=>id.trim().toUpperCase()):[];cart.forEach(item=>{if(!ids.includes(item.productId.toUpperCase())){if(appliedPromo.discount_type==='percentage')pd+=(item.price*item.quantity)*(appliedPromo.discount_value/100);else pd+=appliedPromo.discount_value*item.quantity}})}
-            const codFee=(selectedPayment==='cod')?20:0;const t=s-pd+codFee;
-            document.getElementById('summarySubtotal').textContent='AED '+s.toLocaleString();
-            document.getElementById('promoDiscountRow').style.display=pd>0?'flex':'none';
-            if(pd>0)document.getElementById('summaryDiscount').textContent='-AED '+Math.round(pd).toLocaleString();
-            document.getElementById('codFeeRow').style.display=codFee>0?'flex':'none';
-            document.getElementById('summaryTotal').textContent='AED '+Math.round(t).toLocaleString();
+        function updateCities() {
+            const e = document.getElementById('emirate').value;
+            const c = document.getElementById('city'), a = document.getElementById('area');
+            c.innerHTML = '<option value="">Select City</option>'; a.innerHTML = '<option value="">Select Area</option>';
+            if (e && UAE_DATA[e]) UAE_DATA[e].cities.forEach(city => { c.innerHTML += `<option>${city}</option>` });
+        }
+        function updateAreas() {
+            const e = document.getElementById('emirate').value, c = document.getElementById('city').value;
+            const a = document.getElementById('area');
+            a.innerHTML = '<option value="">Select Area</option>';
+            if (e && c && UAE_DATA[e] && UAE_DATA[e].areas[c]) UAE_DATA[e].areas[c].forEach(ar => { a.innerHTML += `<option>${ar}</option>` });
         }
 
-        async function processPayment(){
-            const fn=document.getElementById('firstName').value.trim(),ln=document.getElementById('lastName').value.trim();
-            const mb=document.getElementById('mobile').value.trim(),em=document.getElementById('email').value.trim();
-            const ei=document.getElementById('emirate').value,ci=document.getElementById('city').value;
-            if(!fn||!ln||!mb||!em||!ei||!ci){alert('Please fill all required fields marked with *');return}
-            
-            document.getElementById('loadingOverlay').classList.add('active');
-            document.getElementById('loadingText').textContent='Placing your order...';
-            
-            const oid='ORD'+Date.now().toString().slice(-8);
-            let subtotal=cart.reduce((s,i)=>s+(i.price*i.quantity),0),promoDiscount=0;
-            if(appliedPromo&&appliedPromo.active){const ids=appliedPromo.excluded_products?appliedPromo.excluded_products.split(',').map(id=>id.trim().toUpperCase()):[];cart.forEach(item=>{if(!ids.includes(item.productId.toUpperCase())){if(appliedPromo.discount_type==='percentage')promoDiscount+=(item.price*item.quantity)*(appliedPromo.discount_value/100);else promoDiscount+=appliedPromo.discount_value*item.quantity}})}
-            const codFee=(selectedPayment==='cod')?20:0,totalAmount=Math.round(subtotal-promoDiscount+codFee);
-            
-            const orderData={order_id:oid,firstName:fn,lastName:ln,mobile:mb,email:em,customer_name:fn+' '+ln,customer_email:em,emirate:ei,city:ci,area:document.getElementById('area').value,street:document.getElementById('street').value,building:document.getElementById('building').value,apartment:document.getElementById('apartment').value,floor:document.getElementById('floor').value,landmark:document.getElementById('landmark').value,instructions:document.getElementById('instructions').value,products:cart.map(i=>({product_id:i.productId,name:i.name,price:i.price,quantity:i.quantity})),total_amount:totalAmount,payment_method:selectedPayment,promo_code:appliedPromo?appliedPromo.promo_code:''};
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+            document.getElementById(method + 'Option').classList.add('selected');
+            document.getElementById('codFeeRow').style.display = (method === 'cod') ? 'flex' : 'none';
+            document.getElementById('payButtonText').textContent = method === 'cod' ? 'Place Order (COD)' : 'Pay with Card';
+            renderCartMini();
+        }
 
-            try{
-                await fetch(GOOGLE_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(orderData)});
-                localStorage.setItem('orderData',JSON.stringify({orderId:oid,customer:orderData,cart,promo:appliedPromo,total:totalAmount,paymentMethod:selectedPayment}));
-                localStorage.removeItem('cart');localStorage.removeItem('appliedPromo');
-                window.location.href='sucess.html';
-            }catch(err){
-                console.error('Error:',err);
-                alert('Something went wrong. Please try again.');
-                document.getElementById('loadingOverlay').classList.remove('active');
+        function renderCartMini() {
+            const co = document.getElementById('cartMiniItems');
+            let s = 0;
+            co.innerHTML = cart.map(item => {
+                const it = item.price * item.quantity; s += it;
+                let img = item.image || '';
+                if (img.includes('drive.google.com/uc')) { const id = img.split('id=')[1]; if (id) img = 'https://drive.google.com/thumbnail?id=' + id + '&sz=w100'; }
+                return `<div class="cart-mini-item"><img src="${img || 'https://placehold.co/50x50'}" alt="${item.name}" onerror="this.src='https://placehold.co/50x50/1e293b/ffffff?text=Item'"><div class="cart-mini-details"><div class="name">${item.name}</div><div class="qty">Qty: ${item.quantity}</div><div class="price">AED ${it.toLocaleString()}</div></div></div>`;
+            }).join('');
+            let pd = 0;
+            if (appliedPromo && appliedPromo.active) {
+                const ids = appliedPromo.excluded_products ? appliedPromo.excluded_products.split(',').map(id => id.trim().toUpperCase()) : [];
+                cart.forEach(item => { if (!ids.includes(item.productId.toUpperCase())) { if (appliedPromo.discount_type === 'percentage') pd += (item.price * item.quantity) * (appliedPromo.discount_value / 100); else pd += appliedPromo.discount_value * item.quantity; } });
+            }
+            const codFee = (selectedPayment === 'cod') ? 20 : 0;
+            const t = s - pd + codFee;
+            document.getElementById('summarySubtotal').textContent = 'AED ' + s.toLocaleString();
+            document.getElementById('promoDiscountRow').style.display = pd > 0 ? 'flex' : 'none';
+            if (pd > 0) document.getElementById('summaryDiscount').textContent = '-AED ' + Math.round(pd).toLocaleString();
+            document.getElementById('codFeeRow').style.display = codFee > 0 ? 'flex' : 'none';
+            document.getElementById('summaryTotal').textContent = 'AED ' + Math.round(t).toLocaleString();
+        }
+
+        async function processPayment() {
+            const fn = document.getElementById('firstName').value.trim();
+            const ln = document.getElementById('lastName').value.trim();
+            const mb = document.getElementById('mobile').value.trim();
+            const em = document.getElementById('email').value.trim();
+            const ei = document.getElementById('emirate').value;
+            const ci = document.getElementById('city').value;
+            
+            if (!fn || !ln || !mb || !em || !ei || !ci) { alert('Please fill all required fields marked with *'); return; }
+            
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('active');
+            
+            const oid = 'ORD' + Date.now().toString().slice(-8);
+            
+            let subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+            let promoDiscount = 0;
+            if (appliedPromo && appliedPromo.active) {
+                const ids = appliedPromo.excluded_products ? appliedPromo.excluded_products.split(',').map(id => id.trim().toUpperCase()) : [];
+                cart.forEach(item => { if (!ids.includes(item.productId.toUpperCase())) { if (appliedPromo.discount_type === 'percentage') promoDiscount += (item.price * item.quantity) * (appliedPromo.discount_value / 100); else promoDiscount += appliedPromo.discount_value * item.quantity; } });
+            }
+            const codFee = (selectedPayment === 'cod') ? 20 : 0;
+            const totalAmount = Math.round(subtotal - promoDiscount + codFee);
+
+            const orderData = {
+                order_id: oid, firstName: fn, lastName: ln, mobile: mb, email: em,
+                customer_name: fn + ' ' + ln, customer_email: em,
+                emirate: ei, city: ci,
+                area: document.getElementById('area').value,
+                street: document.getElementById('street').value,
+                building: document.getElementById('building').value,
+                apartment: document.getElementById('apartment').value,
+                floor: document.getElementById('floor').value,
+                landmark: document.getElementById('landmark').value,
+                instructions: document.getElementById('instructions').value,
+                products: cart.map(i => ({ product_id: i.productId, name: i.name, price: i.price, quantity: i.quantity })),
+                total_amount: totalAmount,
+                payment_method: selectedPayment,
+                promo_code: appliedPromo ? appliedPromo.promo_code : ''
+            };
+
+            // Save pending order
+            localStorage.setItem('pendingOrder', JSON.stringify(orderData));
+
+            if (selectedPayment === 'cod') {
+                // Cash on Delivery - save directly
+                document.getElementById('loadingText').textContent = 'Placing COD order...';
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(orderData)
+                    });
+                    localStorage.removeItem('cart');
+                    localStorage.removeItem('appliedPromo');
+                    localStorage.removeItem('pendingOrder');
+                    localStorage.setItem('orderData', JSON.stringify({ orderId: oid, cart, total: totalAmount, paymentMethod: 'cod' }));
+                    window.location.href = 'sucess.html';
+                } catch (err) {
+                    alert('Error placing order. Please try again.');
+                    overlay.classList.remove('active');
+                }
+            } else {
+                // Stripe Card Payment
+                document.getElementById('loadingText').textContent = 'Redirecting to secure payment...';
+                
+                const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+                
+                const lineItems = cart.map(item => ({
+                    price_data: {
+                        currency: 'aed',
+                        product_data: { 
+                            name: item.name,
+                            images: item.image ? [item.image] : []
+                        },
+                        unit_amount: Math.round(item.price * 100),
+                    },
+                    quantity: item.quantity,
+                }));
+
+                try {
+                    const { error } = await stripe.redirectToCheckout({
+                        lineItems: lineItems,
+                        mode: 'payment',
+                        successUrl: window.location.origin + '/sucess.html?session_id={CHECKOUT_SESSION_ID}&order_id=' + oid,
+                        cancelUrl: window.location.origin + '/cancel.html',
+                        customerEmail: em,
+                        clientReferenceId: oid,
+                        metadata: {
+                            order_id: oid,
+                            customer_name: fn + ' ' + ln,
+                            customer_email: em,
+                            mobile: mb,
+                            emirate: ei,
+                            city: ci,
+                            products: JSON.stringify(cart.map(i => ({ name: i.name, qty: i.quantity, price: i.price })))
+                        }
+                    });
+                    
+                    if (error) {
+                        alert('Payment error: ' + error.message);
+                        overlay.classList.remove('active');
+                    }
+                } catch (err) {
+                    console.error('Stripe error:', err);
+                    alert('Could not connect to payment gateway. Please try again.');
+                    overlay.classList.remove('active');
+                }
             }
         }
     </script>
