@@ -104,7 +104,6 @@
 
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQwpj3z0y9sVujNmWiTHlzpfNt9F1TeIvPdE2sv_t4qe62rBuW75n2s09r9WAkFYorZA/exec';
-        const STRIPE_PUBLISHABLE_KEY = 'pk_live_51TgmgV3nss3O6WFl9T1GgTyoH1NL66svOsK6IvYRXfYbGxRsbjprw4UGfZ1tMcSGeJzdXH4qKwQ8ebpFLyd5FGwC00tPzgxQHA';
         
         const UAE_DATA = {
             "Abu Dhabi":{cities:["Abu Dhabi City","Al Ain","Al Dhafra"],areas:{"Abu Dhabi City":["Al Reem Island","Al Raha","Khalifa City","MBZ City","Mussafah","Yas Island","Saadiyat Island","Baniyas"],"Al Ain":["Al Ain City","Al Jimi"],"Al Dhafra":["Ruwais","Madinat Zayed"]}},
@@ -148,22 +147,37 @@
             renderCartMini();
         }
 
+        function fixImageUrl(url) {
+            if (!url) return 'https://placehold.co/50x50/1e293b/ffffff?text=Item';
+            if (url.includes('drive.google.com/uc')) {
+                const id = url.split('id=')[1];
+                if (id) return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w100';
+            }
+            return url;
+        }
+
         function renderCartMini() {
             const co = document.getElementById('cartMiniItems');
             let s = 0;
             co.innerHTML = cart.map(item => {
                 const it = item.price * item.quantity; s += it;
-                let img = item.image || '';
-                if (img.includes('drive.google.com/uc')) { const id = img.split('id=')[1]; if (id) img = 'https://drive.google.com/thumbnail?id=' + id + '&sz=w100'; }
-                return `<div class="cart-mini-item"><img src="${img || 'https://placehold.co/50x50'}" alt="${item.name}" onerror="this.src='https://placehold.co/50x50/1e293b/ffffff?text=Item'"><div class="cart-mini-details"><div class="name">${item.name}</div><div class="qty">Qty: ${item.quantity}</div><div class="price">AED ${it.toLocaleString()}</div></div></div>`;
+                const img = fixImageUrl(item.image);
+                return `<div class="cart-mini-item"><img src="${img}" alt="${item.name}" onerror="this.src='https://placehold.co/50x50/1e293b/ffffff?text=Item'"><div class="cart-mini-details"><div class="name">${item.name}</div><div class="qty">Qty: ${item.quantity}</div><div class="price">AED ${it.toLocaleString()}</div></div></div>`;
             }).join('');
+            
             let pd = 0;
             if (appliedPromo && appliedPromo.active) {
                 const ids = appliedPromo.excluded_products ? appliedPromo.excluded_products.split(',').map(id => id.trim().toUpperCase()) : [];
-                cart.forEach(item => { if (!ids.includes(item.productId.toUpperCase())) { if (appliedPromo.discount_type === 'percentage') pd += (item.price * item.quantity) * (appliedPromo.discount_value / 100); else pd += appliedPromo.discount_value * item.quantity; } });
+                cart.forEach(item => { 
+                    if (!ids.includes(item.productId.toUpperCase())) {
+                        if (appliedPromo.discount_type === 'percentage') pd += (item.price * item.quantity) * (appliedPromo.discount_value / 100);
+                        else pd += appliedPromo.discount_value * item.quantity;
+                    }
+                });
             }
             const codFee = (selectedPayment === 'cod') ? 20 : 0;
             const t = s - pd + codFee;
+            
             document.getElementById('summarySubtotal').textContent = 'AED ' + s.toLocaleString();
             document.getElementById('promoDiscountRow').style.display = pd > 0 ? 'flex' : 'none';
             if (pd > 0) document.getElementById('summaryDiscount').textContent = '-AED ' + Math.round(pd).toLocaleString();
@@ -179,7 +193,10 @@
             const ei = document.getElementById('emirate').value;
             const ci = document.getElementById('city').value;
             
-            if (!fn || !ln || !mb || !em || !ei || !ci) { alert('Please fill all required fields marked with *'); return; }
+            if (!fn || !ln || !mb || !em || !ei || !ci) { 
+                alert('Please fill all required fields marked with *'); 
+                return; 
+            }
             
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.add('active');
@@ -191,7 +208,12 @@
             let promoDiscount = 0;
             if (appliedPromo && appliedPromo.active) {
                 const ids = appliedPromo.excluded_products ? appliedPromo.excluded_products.split(',').map(id => id.trim().toUpperCase()) : [];
-                cart.forEach(item => { if (!ids.includes(item.productId.toUpperCase())) { if (appliedPromo.discount_type === 'percentage') promoDiscount += (item.price * item.quantity) * (appliedPromo.discount_value / 100); else promoDiscount += appliedPromo.discount_value * item.quantity; } });
+                cart.forEach(item => { 
+                    if (!ids.includes(item.productId.toUpperCase())) {
+                        if (appliedPromo.discount_type === 'percentage') promoDiscount += (item.price * item.quantity) * (appliedPromo.discount_value / 100);
+                        else promoDiscount += appliedPromo.discount_value * item.quantity;
+                    }
+                });
             }
             const codFee = (selectedPayment === 'cod') ? 20 : 0;
             const totalAmount = Math.round(subtotal - promoDiscount + codFee);
@@ -216,16 +238,24 @@
 
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
+                
                 const result = await response.json();
                 console.log('Order saved:', result);
                 
-                localStorage.setItem('orderData', JSON.stringify({ orderId: oid, customer: orderData, cart, promo: appliedPromo, total: totalAmount, paymentMethod: selectedPayment }));
+                localStorage.setItem('orderData', JSON.stringify({ 
+                    orderId: oid, customer: orderData, cart: cart,
+                    promo: appliedPromo, total: totalAmount, paymentMethod: selectedPayment 
+                }));
+                
                 localStorage.removeItem('cart');
                 localStorage.removeItem('appliedPromo');
+                
                 window.location.href = 'sucess.html';
+                
             } catch (err) {
                 console.error('Error:', err);
                 alert('Something went wrong. Please try again.');
