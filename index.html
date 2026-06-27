@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root{--primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#f59e0b;--dark:#0f172a;--dark-light:#1e293b;--light:#f8fafc;--gray:#64748b;--gray-light:#e2e8f0;--success:#16a34a;--danger:#dc2626;--warning:#f59e0b;--radius:12px;--radius-sm:8px;--shadow:0 4px 20px rgba(0,0,0,0.1);--shadow-hover:0 8px 30px rgba(0,0,0,0.15);--transition:all 0.3s ease}
+        :root{--primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#f59e0b;--dark:#0f172a;--dark-light:#1e293b;--light:#f8fafc;--gray:#64748b;--gray-light:#e2e8f0;--success:#16a34a;--danger:#dc2626;--radius:12px;--radius-sm:8px;--shadow:0 4px 20px rgba(0,0,0,0.1);--transition:all 0.3s ease}
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Inter',sans-serif;background:#f1f5f9;color:var(--dark);line-height:1.6}
         .loader-container{display:flex;justify-content:center;align-items:center;min-height:400px}
@@ -39,7 +39,7 @@
         .category-btn:hover{border-color:var(--primary);color:var(--primary)}.category-btn.active{background:var(--primary);color:white;border-color:var(--primary)}
         .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:3rem}
         .product-card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:var(--transition);position:relative}
-        .product-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-hover)}
+        .product-card:hover{transform:translateY(-5px);box-shadow:0 8px 30px rgba(0,0,0,0.15)}
         .product-image-container{position:relative;width:100%;height:250px;overflow:hidden;background:#f8fafc}
         .product-image{width:100%;height:100%;object-fit:cover;transition:var(--transition)}.product-card:hover .product-image{transform:scale(1.05)}
         .discount-badge{position:absolute;top:10px;left:10px;background:var(--danger);color:white;padding:0.3rem 0.8rem;border-radius:50px;font-weight:700;font-size:0.85rem;z-index:10}
@@ -51,6 +51,7 @@
         .price-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem}
         .original-price{color:var(--gray);text-decoration:line-through;font-size:0.9rem}
         .offer-price{color:var(--success);font-size:1.3rem;font-weight:700}
+        .regular-price{color:var(--dark);font-size:1.3rem;font-weight:700}
         .add-to-cart-btn{width:100%;padding:0.8rem;background:var(--primary);color:white;border:none;border-radius:var(--radius-sm);font-size:0.95rem;font-weight:600;cursor:pointer;transition:var(--transition);font-family:'Inter',sans-serif}
         .add-to-cart-btn:hover{background:var(--primary-dark);transform:translateY(-2px)}.add-to-cart-btn:disabled{background:var(--gray);cursor:not-allowed;transform:none}
         .stock-status{font-size:0.8rem;margin-bottom:0.5rem}.in-stock{color:var(--success);font-weight:600}.out-of-stock{color:var(--danger);font-weight:600}
@@ -58,15 +59,41 @@
         .no-products i{font-size:3rem;margin-bottom:1rem;display:block;color:var(--gray-light)}
         .footer{background:var(--dark);color:white;padding:3rem 2rem 1rem;margin-top:3rem}
         .footer-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-bottom:2rem}
-        .footer h3{color:var(--secondary);margin-bottom:1rem;font-size:1.2rem}
-        .footer p,.footer a{color:#cbd5e1;text-decoration:none;font-size:0.9rem;line-height:2;display:block}.footer a:hover{color:white}
-        .footer-bottom{text-align:center;padding-top:2rem;border-top:1px solid var(--dark-light);color:var(--gray);font-size:0.9rem}
-        .footer-bottom a{color:var(--secondary);text-decoration:none}
+        .footer h3{color:var(--secondary);margin-bottom:1rem;font-size:1.2rem}.footer p,.footer a{color:#cbd5e1;text-decoration:none;font-size:0.9rem;line-height:2;display:block}.footer a:hover{color:white}
+        .footer-bottom{text-align:center;padding-top:2rem;border-top:1px solid var(--dark-light);color:var(--gray);font-size:0.9rem}.footer-bottom a{color:var(--secondary);text-decoration:none}
         .toast{position:fixed;bottom:30px;right:30px;background:var(--success);color:white;padding:1rem 2rem;border-radius:var(--radius-sm);box-shadow:var(--shadow);font-weight:500;z-index:2000;animation:slideIn 0.3s ease}
         @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+        
+        /* Tablet */
         @media(max-width:1024px){.product-grid{grid-template-columns:repeat(2,1fr)}}
-        @media(max-width:768px){.header-inner{flex-direction:column;gap:1rem}.search-bar{max-width:100%}.hero h1{font-size:2rem}.hero p{font-size:1rem}.footer-grid{grid-template-columns:1fr}}
-        @media(max-width:480px){.product-grid{grid-template-columns:1fr}.container{padding:1rem}.hero{padding:2rem 1rem}}
+        
+        /* Mobile - 2 columns */
+        @media(max-width:640px){
+            .product-grid{grid-template-columns:repeat(2,1fr);gap:0.7rem}
+            .container{padding:0.5rem}
+            .hero{padding:2rem 1rem}
+            .hero h1{font-size:1.5rem}
+            .hero p{font-size:0.9rem}
+            .header-inner{flex-direction:column;gap:0.8rem}
+            .search-bar{max-width:100%}
+            .product-image-container{height:160px}
+            .product-name{font-size:0.85rem}
+            .product-description{font-size:0.7rem;-webkit-line-clamp:1}
+            .offer-price{font-size:0.95rem}
+            .original-price{font-size:0.7rem}
+            .regular-price{font-size:0.95rem}
+            .product-info{padding:0.7rem}
+            .add-to-cart-btn{padding:0.5rem;font-size:0.75rem}
+            .discount-badge{font-size:0.65rem;padding:0.2rem 0.5rem;top:5px;left:5px}
+            .quick-view-btn{font-size:0.65rem;padding:0.3rem 0.6rem;bottom:5px;right:5px}
+            .categories{gap:0.4rem;margin-bottom:1rem}
+            .category-btn{padding:0.4rem 1rem;font-size:0.75rem}
+            .footer-grid{grid-template-columns:1fr;text-align:center}
+            .nav-links{gap:1rem}.nav-link{font-size:0.8rem}
+            .logo{font-size:1.3rem}.logo i{font-size:1.5rem}
+            .cart-icon{font-size:1.2rem}
+            .btn{padding:0.7rem 1.5rem;font-size:0.9rem}
+        }
     </style>
 </head>
 <body>
@@ -80,11 +107,14 @@
             </div>
         </div>
     </header>
+    
     <section class="hero"><div class="hero-content"><h1>Discover Amazing <span>Deals</span></h1><p id="heroTagline">Shop premium products at unbeatable prices in UAE</p><a href="#products" class="btn btn-secondary">Shop Now <i class="fas fa-arrow-right"></i></a></div></section>
+    
     <main class="container" id="products">
         <div class="categories" id="categoryFilter"><button class="category-btn active" data-category="all">All Products</button></div>
         <div class="product-grid" id="productGrid"><div class="loader-container"><div class="loader"></div></div></div>
     </main>
+    
     <footer class="footer">
         <div class="footer-grid">
             <div><h3 id="footerCompanyName">ShopEase</h3><p id="footerAbout">Your trusted online shopping destination in UAE.</p></div>
@@ -93,22 +123,25 @@
         </div>
         <div class="footer-bottom"><p>&copy; 2024 <a href="index.html" id="footerCopyName">ShopEase</a>. All rights reserved.</p></div>
     </footer>
+    
     <div id="toastContainer"></div>
+    
     <script>
         const GOOGLE_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwQwpj3z0y9sVujNmWiTHlzpfNt9F1TeIvPdE2sv_t4qe62rBuW75n2s09r9WAkFYorZA/exec';
         let allProducts=[],currentCategory='all',companyInfo={};
         document.addEventListener('DOMContentLoaded',()=>{updateCartCount();loadCompanyInfo();fetchProducts();setupSearch()});
         async function loadCompanyInfo(){try{const r=await fetch(GOOGLE_SCRIPT_URL+'?action=getCompanyInfo');const d=await r.json();if(d.success){companyInfo=d;updateCompanyDisplay()}}catch(e){}}
-        function updateCompanyDisplay(){const n=companyInfo.company_name||'ShopEase';document.getElementById('companyName').textContent=n;document.getElementById('heroTagline').textContent=companyInfo.about_us||'Shop premium products at unbeatable prices in UAE';document.getElementById('footerCompanyName').textContent=n;document.getElementById('footerAbout').textContent=companyInfo.about_us||'Your trusted online shopping destination in UAE.';document.getElementById('footerEmail').textContent=companyInfo.email||'support@shopease.com';document.getElementById('footerPhone').textContent=companyInfo.phone||'+971 50 123 4567';document.getElementById('footerAddress').textContent=companyInfo.address||'Dubai, UAE';document.getElementById('footerCopyName').textContent=n;document.title=n+' - Online Shopping UAE'}
+        function updateCompanyDisplay(){const n=companyInfo.company_name||'ShopEase';document.getElementById('companyName').textContent=n;document.getElementById('heroTagline').textContent=companyInfo.about_us||'Shop premium products at unbeatable prices in UAE';document.getElementById('footerCompanyName').textContent=n;document.getElementById('footerAbout').textContent=companyInfo.about_us||'Your trusted store in UAE.';document.getElementById('footerEmail').textContent=companyInfo.email||'support@shopease.com';document.getElementById('footerPhone').textContent=companyInfo.phone||'+971 50 123 4567';document.getElementById('footerAddress').textContent=companyInfo.address||'Dubai, UAE';document.getElementById('footerCopyName').textContent=n;document.title=n+' - UAE'}
         async function fetchProducts(){const g=document.getElementById('productGrid');try{const r=await fetch(GOOGLE_SCRIPT_URL+'?action=getProducts');const d=await r.json();if(d.success&&d.products&&d.products.length>0){allProducts=d.products;populateCategories(allProducts);displayProducts(allProducts)}else{g.innerHTML='<div class="no-products"><i class="fas fa-box-open"></i><p>No products found.</p></div>'}}catch(e){g.innerHTML='<div class="no-products"><i class="fas fa-exclamation-triangle"></i><p>Error loading products.</p></div>'}}
         function populateCategories(p){const f=document.getElementById('categoryFilter');const c=new Set();p.forEach(x=>{if(x.category)c.add(x.category)});c.forEach(cat=>{const b=document.createElement('button');b.className='category-btn';b.textContent=cat;b.addEventListener('click',function(){document.querySelectorAll('.category-btn').forEach(bt=>bt.classList.remove('active'));this.classList.add('active');filterByCategory(cat)});f.appendChild(b)});document.querySelector('[data-category="all"]').addEventListener('click',function(){document.querySelectorAll('.category-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');filterByCategory('all')})}
         function filterByCategory(c){currentCategory=c;applyFilters(document.getElementById('searchInput').value.toLowerCase())}
         function setupSearch(){document.getElementById('searchInput').addEventListener('input',function(){applyFilters(this.value.toLowerCase())})}
         function applyFilters(s){let f=allProducts;if(currentCategory!=='all')f=f.filter(p=>p.category===currentCategory);if(s)f=f.filter(p=>p.name.toLowerCase().includes(s)||p.description.toLowerCase().includes(s)||p.category.toLowerCase().includes(s));displayProducts(f)}
-        function displayProducts(p){const g=document.getElementById('productGrid');if(p.length===0){g.innerHTML='<div class="no-products"><i class="fas fa-search"></i><p>No products match your search.</p></div>';return}
+        function displayProducts(p){const g=document.getElementById('productGrid');if(p.length===0){g.innerHTML='<div class="no-products"><i class="fas fa-search"></i><p>No products match.</p></div>';return}
         g.innerHTML=p.map(pr=>{let u=pr.image_url||'';if(u.includes('drive.google.com/uc')){const id=u.split('id=')[1];if(id)u='https://drive.google.com/thumbnail?id='+id+'&sz=w400'}const fb='https://placehold.co/400x400/1e293b/ffffff?text='+encodeURIComponent(pr.name||'Product');
-        return`<div class="product-card"><div class="product-image-container"><img src="${u}" alt="${pr.name}" class="product-image" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fb}';"><span class="discount-badge">-${pr.discount_percentage}%</span><button class="quick-view-btn" onclick="location.href='product.html?id=${pr.product_id}'"><i class="fas fa-eye"></i> Quick View</button></div><div class="product-info"><a href="product.html?id=${pr.product_id}" style="text-decoration:none;color:inherit"><h3 class="product-name">${pr.name}</h3></a><p class="product-description">${pr.description}</p><div class="price-row"><span class="offer-price">AED ${Number(pr.offer_price).toLocaleString()}</span>${Number(pr.original_price)>Number(pr.offer_price)?`<span class="original-price">AED ${Number(pr.original_price).toLocaleString()}</span>`:''}</div>${pr.in_stock?`<p class="stock-status in-stock"><i class="fas fa-check-circle"></i> In Stock</p><button class="add-to-cart-btn" onclick="addToCart('${pr.product_id}','${pr.name.replace(/'/g,"\\'")}',${pr.offer_price},'${u}',${pr.stock})"><i class="fas fa-cart-plus"></i> Add to Cart</button>`:'<p class="stock-status out-of-stock"><i class="fas fa-times-circle"></i> Out of Stock</p><button class="add-to-cart-btn" disabled>Out of Stock</button>'}</div></div>`}).join('')}
-        function addToCart(id,n,pr,img,st){let c=JSON.parse(localStorage.getItem('cart'))||[];const ex=c.find(i=>i.productId===id);if(ex){if(ex.quantity<st)ex.quantity+=1;else{showToast('Maximum stock reached!','warning');return}}else{c.push({productId:id,name:n,price:pr,image:img,quantity:1,maxStock:st})}localStorage.setItem('cart',JSON.stringify(c));updateCartCount();showToast('Added to cart!','success')}
+        const hasDiscount=pr.discount_percentage>0;
+        return`<div class="product-card"><div class="product-image-container"><img src="${u}" alt="${pr.name}" class="product-image" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fb}';"><span class="discount-badge">-${pr.discount_percentage}%</span><button class="quick-view-btn" onclick="location.href='product.html?id=${pr.product_id}'"><i class="fas fa-eye"></i></button></div><div class="product-info"><a href="product.html?id=${pr.product_id}" style="text-decoration:none;color:inherit"><h3 class="product-name">${pr.name}</h3></a><p class="product-description">${pr.description}</p><div class="price-row">${hasDiscount?`<span class="offer-price">AED ${Number(pr.offer_price).toLocaleString()}</span><span class="original-price">AED ${Number(pr.original_price).toLocaleString()}</span>`:`<span class="regular-price">AED ${Number(pr.offer_price).toLocaleString()}</span>`}</div>${pr.in_stock?`<p class="stock-status in-stock"><i class="fas fa-check-circle"></i> In Stock</p><button class="add-to-cart-btn" onclick="addToCart('${pr.product_id}','${pr.name.replace(/'/g,"\\'")}',${pr.offer_price},'${u}',${pr.stock})"><i class="fas fa-cart-plus"></i> Add to Cart</button>`:'<p class="stock-status out-of-stock"><i class="fas fa-times-circle"></i> Out of Stock</p><button class="add-to-cart-btn" disabled>Out of Stock</button>'}</div></div>`}).join('')}
+        function addToCart(id,n,pr,img,st){let c=JSON.parse(localStorage.getItem('cart'))||[];const ex=c.find(i=>i.productId===id);if(ex){if(ex.quantity<st)ex.quantity+=1;else{showToast('Max stock reached!','warning');return}}else{c.push({productId:id,name:n,price:pr,image:img,quantity:1,maxStock:st})}localStorage.setItem('cart',JSON.stringify(c));updateCartCount();showToast('Added to cart!','success')}
         function updateCartCount(){const c=JSON.parse(localStorage.getItem('cart'))||[];const t=c.reduce((s,i)=>s+i.quantity,0);const b=document.getElementById('cartCount');if(t>0){b.style.display='flex';b.textContent=t}else{b.style.display='none'}}
         function showToast(m,t='success'){const to=document.createElement('div');to.className='toast';to.style.background=t==='success'?'var(--success)':'var(--warning)';to.innerHTML='<i class="fas fa-'+(t==='success'?'check-circle':'exclamation-circle')+'"></i> '+m;document.getElementById('toastContainer').appendChild(to);setTimeout(()=>to.remove(),3000)}
     </script>
