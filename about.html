@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - ShopEase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#f59e0b;--dark:#0f172a;--dark-light:#1e293b;--light:#f8fafc;--gray:#64748b;--success:#16a34a;--radius:12px;--shadow:0 4px 20px rgba(0,0,0,0.1);--transition:all 0.3s ease}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:#f1f5f9;color:var(--dark);line-height:1.6}
+        .header{background:var(--dark);padding:1rem 2rem;position:sticky;top:0;z-index:1000}
+        .header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+        .logo{font-size:1.8rem;font-weight:800;color:white;text-decoration:none;display:flex;align-items:center;gap:0.5rem}
+        .logo i{color:var(--secondary)}.logo span{color:var(--secondary)}
+        .nav-links{display:flex;gap:1.5rem}.nav-link{color:white;text-decoration:none;font-weight:500;transition:var(--transition)}.nav-link:hover,.nav-link.active{color:var(--secondary)}
+        .container{max-width:1000px;margin:2rem auto;padding:0 2rem}
+        .page-hero{background:linear-gradient(135deg,var(--dark) 0%,var(--dark-light) 100%);color:white;padding:3rem 2rem;text-align:center;border-radius:var(--radius);margin-bottom:2rem}
+        .page-hero h1{font-size:2.5rem}.page-hero h1 span{color:var(--secondary)}
+        .content-card{background:white;border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;box-shadow:var(--shadow)}
+        .content-card h2{color:var(--primary);margin-bottom:1rem}.content-card p{color:var(--gray);margin-bottom:1rem}
+        .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
+        .feature-card{text-align:center;padding:2rem 1rem;background:white;border-radius:var(--radius);box-shadow:var(--shadow);transition:var(--transition)}.feature-card:hover{transform:translateY(-5px)}
+        .feature-icon{font-size:2.5rem;color:var(--primary);margin-bottom:1rem}
+        .footer{background:var(--dark);color:white;padding:2rem;text-align:center;margin-top:3rem}.footer a{color:var(--secondary);text-decoration:none}
+        @media(max-width:768px){.features-grid{grid-template-columns:1fr}.page-hero h1{font-size:1.8rem}}
+    </style>
+</head>
+<body>
+    <header class="header"><div class="header-inner"><a href="index.html" class="logo"><i class="fas fa-shopping-bag"></i>Shop<span>Ease</span></a><nav class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="about.html" class="nav-link active">About</a><a href="contact.html" class="nav-link">Contact</a><a href="cart.html" class="nav-link"><i class="fas fa-shopping-cart"></i></a></nav></div></header>
+    <div class="container">
+        <div class="page-hero"><h1>About <span>ShopEase</span></h1><p>Your trusted online shopping destination in UAE</p></div>
+        <div class="content-card"><h2>Our Story</h2><p>ShopEase was founded with a simple mission: to make quality shopping accessible to everyone in the UAE. We curate the best products at unbeatable prices.</p></div>
+        <div class="content-card"><h2>Why Choose Us?</h2><div class="features-grid"><div class="feature-card"><div class="feature-icon"><i class="fas fa-tags"></i></div><h3>Best Prices</h3><p>Competitive prices across all categories</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-truck-fast"></i></div><h3>Fast Delivery</h3><p>Delivery across all 7 Emirates</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-check"></i></div><h3>Secure Shopping</h3><p>100% secure checkout</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-undo-alt"></i></div><h3>Easy Returns</h3><p>30-day return policy</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-headset"></i></div><h3>24/7 Support</h3><p>Always here to help</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-star"></i></div><h3>Quality Products</h3><p>Carefully selected items</p></div></div></div>
+    </div>
+    <footer class="footer"><p>&copy; 2024 <a href="index.html">ShopEase</a>. All rights reserved. UAE</p></footer>
+</body>
+</html>

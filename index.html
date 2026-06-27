@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>ShopEase - Online Shopping UAE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#f59e0b;--dark:#0f172a;--dark-light:#1e293b;--light:#f8fafc;--gray:#64748b;--gray-light:#e2e8f0;--success:#16a34a;--danger:#dc2626;--warning:#f59e0b;--radius:12px;--radius-sm:8px;--shadow:0 4px 20px rgba(0,0,0,0.1);--shadow-hover:0 8px 30px rgba(0,0,0,0.15);--transition:all 0.3s ease}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:#f1f5f9;color:var(--dark);line-height:1.6}
+        .loader-container{display:flex;justify-content:center;align-items:center;min-height:400px}
+        .loader{width:50px;height:50px;border:5px solid var(--gray-light);border-top:5px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .header{background:var(--dark);padding:1rem 2rem;position:sticky;top:0;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.3)}
+        .header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:2rem}
+        .logo{font-size:1.8rem;font-weight:800;color:white;text-decoration:none;display:flex;align-items:center;gap:0.5rem}
+        .logo i{color:var(--secondary);font-size:2rem}.logo span{color:var(--secondary)}
+        .search-bar{flex:1;max-width:600px;position:relative}
+        .search-bar input{width:100%;padding:0.8rem 1.2rem 0.8rem 3rem;border:2px solid transparent;border-radius:50px;font-size:1rem;background:var(--dark-light);color:white;transition:var(--transition);font-family:'Inter',sans-serif}
+        .search-bar input::placeholder{color:#94a3b8}.search-bar input:focus{outline:none;border-color:var(--primary);background:#1e293b}
+        .search-bar i{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:1.1rem}
+        .header-actions{display:flex;align-items:center;gap:1.5rem}
+        .cart-icon{position:relative;color:white;font-size:1.5rem;text-decoration:none;transition:var(--transition)}.cart-icon:hover{color:var(--secondary)}
+        .cart-badge{position:absolute;top:-8px;right:-8px;background:var(--danger);color:white;font-size:0.7rem;font-weight:700;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+        .nav-links{display:flex;gap:1.5rem;align-items:center}.nav-link{color:white;text-decoration:none;font-weight:500;transition:var(--transition);font-size:0.95rem}.nav-link:hover{color:var(--secondary)}
+        .hero{background:linear-gradient(135deg,#1e293b 0%,#0f172a 50%,#1e3a5f 100%);color:white;padding:4rem 2rem;text-align:center;position:relative;overflow:hidden}
+        .hero-content{position:relative;z-index:1;max-width:800px;margin:0 auto}
+        .hero h1{font-size:3rem;font-weight:800;margin-bottom:1rem;line-height:1.2}.hero h1 span{color:var(--secondary)}
+        .hero p{font-size:1.2rem;margin-bottom:2rem;color:#cbd5e1}
+        .btn{display:inline-block;padding:0.9rem 2.5rem;border:none;border-radius:50px;font-size:1rem;font-weight:600;cursor:pointer;text-decoration:none;transition:var(--transition);font-family:'Inter',sans-serif}
+        .btn-primary{background:var(--primary);color:white}.btn-primary:hover{background:var(--primary-dark);transform:translateY(-2px);box-shadow:0 10px 25px rgba(37,99,235,0.4)}
+        .btn-secondary{background:var(--secondary);color:var(--dark)}.btn-secondary:hover{background:#d97706;transform:translateY(-2px);box-shadow:0 10px 25px rgba(245,158,11,0.4)}
+        .container{max-width:1400px;margin:0 auto;padding:2rem}
+        .categories{display:flex;gap:0.8rem;margin-bottom:2rem;overflow-x:auto;padding-bottom:0.5rem;flex-wrap:wrap}
+        .category-btn{padding:0.6rem 1.5rem;border:2px solid var(--gray-light);background:white;border-radius:50px;cursor:pointer;font-weight:500;transition:var(--transition);white-space:nowrap;font-family:'Inter',sans-serif;font-size:0.9rem}
+        .category-btn:hover{border-color:var(--primary);color:var(--primary)}.category-btn.active{background:var(--primary);color:white;border-color:var(--primary)}
+        .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:3rem}
+        .product-card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:var(--transition);position:relative}
+        .product-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-hover)}
+        .product-image-container{position:relative;width:100%;height:250px;overflow:hidden;background:#f8fafc}
+        .product-image{width:100%;height:100%;object-fit:cover;transition:var(--transition)}.product-card:hover .product-image{transform:scale(1.05)}
+        .discount-badge{position:absolute;top:10px;left:10px;background:var(--danger);color:white;padding:0.3rem 0.8rem;border-radius:50px;font-weight:700;font-size:0.85rem;z-index:10}
+        .quick-view-btn{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:white;border:none;padding:0.5rem 1rem;border-radius:50px;cursor:pointer;font-size:0.8rem;font-weight:500;opacity:0;transition:var(--transition);font-family:'Inter',sans-serif}
+        .product-card:hover .quick-view-btn{opacity:1}
+        .product-info{padding:1.2rem}
+        .product-name{font-size:1.1rem;font-weight:600;margin-bottom:0.5rem;color:var(--dark);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+        .product-description{font-size:0.85rem;color:var(--gray);margin-bottom:0.8rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+        .price-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem}
+        .original-price{color:var(--gray);text-decoration:line-through;font-size:0.9rem}
+        .offer-price{color:var(--success);font-size:1.3rem;font-weight:700}
+        .add-to-cart-btn{width:100%;padding:0.8rem;background:var(--primary);color:white;border:none;border-radius:var(--radius-sm);font-size:0.95rem;font-weight:600;cursor:pointer;transition:var(--transition);font-family:'Inter',sans-serif}
+        .add-to-cart-btn:hover{background:var(--primary-dark);transform:translateY(-2px)}.add-to-cart-btn:disabled{background:var(--gray);cursor:not-allowed;transform:none}
+        .stock-status{font-size:0.8rem;margin-bottom:0.5rem}.in-stock{color:var(--success);font-weight:600}.out-of-stock{color:var(--danger);font-weight:600}
+        .no-products{grid-column:1/-1;text-align:center;padding:3rem;background:white;border-radius:var(--radius);color:var(--gray);font-size:1.1rem}
+        .no-products i{font-size:3rem;margin-bottom:1rem;display:block;color:var(--gray-light)}
+        .footer{background:var(--dark);color:white;padding:3rem 2rem 1rem;margin-top:3rem}
+        .footer-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-bottom:2rem}
+        .footer h3{color:var(--secondary);margin-bottom:1rem;font-size:1.2rem}
+        .footer p,.footer a{color:#cbd5e1;text-decoration:none;font-size:0.9rem;line-height:2;display:block}.footer a:hover{color:white}
+        .footer-bottom{text-align:center;padding-top:2rem;border-top:1px solid var(--dark-light);color:var(--gray);font-size:0.9rem}
+        .footer-bottom a{color:var(--secondary);text-decoration:none}
+        .toast{position:fixed;bottom:30px;right:30px;background:var(--success);color:white;padding:1rem 2rem;border-radius:var(--radius-sm);box-shadow:var(--shadow);font-weight:500;z-index:2000;animation:slideIn 0.3s ease}
+        @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+        @media(max-width:1024px){.product-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:768px){.header-inner{flex-direction:column;gap:1rem}.search-bar{max-width:100%}.hero h1{font-size:2rem}.hero p{font-size:1rem}.footer-grid{grid-template-columns:1fr}}
+        @media(max-width:480px){.product-grid{grid-template-columns:1fr}.container{padding:1rem}.hero{padding:2rem 1rem}}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo"><i class="fas fa-shopping-bag"></i><span id="companyName">Shop</span><span>Ease</span></a>
+            <div class="search-bar"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search products..."></div>
+            <div class="header-actions">
+                <nav class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="about.html" class="nav-link">About</a><a href="contact.html" class="nav-link">Contact</a></nav>
+                <a href="cart.html" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-badge" id="cartCount" style="display:none">0</span></a>
+            </div>
+        </div>
+    </header>
+    <section class="hero"><div class="hero-content"><h1>Discover Amazing <span>Deals</span></h1><p id="heroTagline">Shop premium products at unbeatable prices in UAE</p><a href="#products" class="btn btn-secondary">Shop Now <i class="fas fa-arrow-right"></i></a></div></section>
+    <main class="container" id="products">
+        <div class="categories" id="categoryFilter"><button class="category-btn active" data-category="all">All Products</button></div>
+        <div class="product-grid" id="productGrid"><div class="loader-container"><div class="loader"></div></div></div>
+    </main>
+    <footer class="footer">
+        <div class="footer-grid">
+            <div><h3 id="footerCompanyName">ShopEase</h3><p id="footerAbout">Your trusted online shopping destination in UAE.</p></div>
+            <div><h3>Quick Links</h3><a href="index.html">Home</a><a href="about.html">About Us</a><a href="contact.html">Contact</a><a href="cart.html">Shopping Cart</a></div>
+            <div><h3>Contact Info</h3><p><i class="fas fa-envelope"></i> <span id="footerEmail">support@shopease.com</span></p><p><i class="fas fa-phone"></i> <span id="footerPhone">+971 50 123 4567</span></p><p><i class="fas fa-map-marker-alt"></i> <span id="footerAddress">Dubai, UAE</span></p></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2024 <a href="index.html" id="footerCopyName">ShopEase</a>. All rights reserved.</p></div>
+    </footer>
+    <div id="toastContainer"></div>
+    <script>
+        const GOOGLE_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwQwpj3z0y9sVujNmWiTHlzpfNt9F1TeIvPdE2sv_t4qe62rBuW75n2s09r9WAkFYorZA/exec';
+        let allProducts=[],currentCategory='all',companyInfo={};
+        document.addEventListener('DOMContentLoaded',()=>{updateCartCount();loadCompanyInfo();fetchProducts();setupSearch()});
+        async function loadCompanyInfo(){try{const r=await fetch(GOOGLE_SCRIPT_URL+'?action=getCompanyInfo');const d=await r.json();if(d.success){companyInfo=d;updateCompanyDisplay()}}catch(e){}}
+        function updateCompanyDisplay(){const n=companyInfo.company_name||'ShopEase';document.getElementById('companyName').textContent=n;document.getElementById('heroTagline').textContent=companyInfo.about_us||'Shop premium products at unbeatable prices in UAE';document.getElementById('footerCompanyName').textContent=n;document.getElementById('footerAbout').textContent=companyInfo.about_us||'Your trusted online shopping destination in UAE.';document.getElementById('footerEmail').textContent=companyInfo.email||'support@shopease.com';document.getElementById('footerPhone').textContent=companyInfo.phone||'+971 50 123 4567';document.getElementById('footerAddress').textContent=companyInfo.address||'Dubai, UAE';document.getElementById('footerCopyName').textContent=n;document.title=n+' - Online Shopping UAE'}
+        async function fetchProducts(){const g=document.getElementById('productGrid');try{const r=await fetch(GOOGLE_SCRIPT_URL+'?action=getProducts');const d=await r.json();if(d.success&&d.products&&d.products.length>0){allProducts=d.products;populateCategories(allProducts);displayProducts(allProducts)}else{g.innerHTML='<div class="no-products"><i class="fas fa-box-open"></i><p>No products found.</p></div>'}}catch(e){g.innerHTML='<div class="no-products"><i class="fas fa-exclamation-triangle"></i><p>Error loading products.</p></div>'}}
+        function populateCategories(p){const f=document.getElementById('categoryFilter');const c=new Set();p.forEach(x=>{if(x.category)c.add(x.category)});c.forEach(cat=>{const b=document.createElement('button');b.className='category-btn';b.textContent=cat;b.addEventListener('click',function(){document.querySelectorAll('.category-btn').forEach(bt=>bt.classList.remove('active'));this.classList.add('active');filterByCategory(cat)});f.appendChild(b)});document.querySelector('[data-category="all"]').addEventListener('click',function(){document.querySelectorAll('.category-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');filterByCategory('all')})}
+        function filterByCategory(c){currentCategory=c;applyFilters(document.getElementById('searchInput').value.toLowerCase())}
+        function setupSearch(){document.getElementById('searchInput').addEventListener('input',function(){applyFilters(this.value.toLowerCase())})}
+        function applyFilters(s){let f=allProducts;if(currentCategory!=='all')f=f.filter(p=>p.category===currentCategory);if(s)f=f.filter(p=>p.name.toLowerCase().includes(s)||p.description.toLowerCase().includes(s)||p.category.toLowerCase().includes(s));displayProducts(f)}
+        function displayProducts(p){const g=document.getElementById('productGrid');if(p.length===0){g.innerHTML='<div class="no-products"><i class="fas fa-search"></i><p>No products match your search.</p></div>';return}
+        g.innerHTML=p.map(pr=>{let u=pr.image_url||'';if(u.includes('drive.google.com/uc')){const id=u.split('id=')[1];if(id)u='https://drive.google.com/thumbnail?id='+id+'&sz=w400'}const fb='https://placehold.co/400x400/1e293b/ffffff?text='+encodeURIComponent(pr.name||'Product');
+        return`<div class="product-card"><div class="product-image-container"><img src="${u}" alt="${pr.name}" class="product-image" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fb}';"><span class="discount-badge">-${pr.discount_percentage}%</span><button class="quick-view-btn" onclick="location.href='product.html?id=${pr.product_id}'"><i class="fas fa-eye"></i> Quick View</button></div><div class="product-info"><a href="product.html?id=${pr.product_id}" style="text-decoration:none;color:inherit"><h3 class="product-name">${pr.name}</h3></a><p class="product-description">${pr.description}</p><div class="price-row"><span class="offer-price">AED ${Number(pr.offer_price).toLocaleString()}</span>${Number(pr.original_price)>Number(pr.offer_price)?`<span class="original-price">AED ${Number(pr.original_price).toLocaleString()}</span>`:''}</div>${pr.in_stock?`<p class="stock-status in-stock"><i class="fas fa-check-circle"></i> In Stock</p><button class="add-to-cart-btn" onclick="addToCart('${pr.product_id}','${pr.name.replace(/'/g,"\\'")}',${pr.offer_price},'${u}',${pr.stock})"><i class="fas fa-cart-plus"></i> Add to Cart</button>`:'<p class="stock-status out-of-stock"><i class="fas fa-times-circle"></i> Out of Stock</p><button class="add-to-cart-btn" disabled>Out of Stock</button>'}</div></div>`}).join('')}
+        function addToCart(id,n,pr,img,st){let c=JSON.parse(localStorage.getItem('cart'))||[];const ex=c.find(i=>i.productId===id);if(ex){if(ex.quantity<st)ex.quantity+=1;else{showToast('Maximum stock reached!','warning');return}}else{c.push({productId:id,name:n,price:pr,image:img,quantity:1,maxStock:st})}localStorage.setItem('cart',JSON.stringify(c));updateCartCount();showToast('Added to cart!','success')}
+        function updateCartCount(){const c=JSON.parse(localStorage.getItem('cart'))||[];const t=c.reduce((s,i)=>s+i.quantity,0);const b=document.getElementById('cartCount');if(t>0){b.style.display='flex';b.textContent=t}else{b.style.display='none'}}
+        function showToast(m,t='success'){const to=document.createElement('div');to.className='toast';to.style.background=t==='success'?'var(--success)':'var(--warning)';to.innerHTML='<i class="fas fa-'+(t==='success'?'check-circle':'exclamation-circle')+'"></i> '+m;document.getElementById('toastContainer').appendChild(to);setTimeout(()=>to.remove(),3000)}
+    </script>
+</body>
+</html>

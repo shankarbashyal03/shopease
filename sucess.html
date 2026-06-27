@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - ShopEase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#f59e0b;--dark:#0f172a;--light:#f8fafc;--gray:#64748b;--success:#16a34a;--danger:#dc2626;--radius:12px;--shadow:0 20px 60px rgba(0,0,0,0.1);--transition:all 0.3s ease}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 50%,#f0fdf4 100%);min-height:100vh;display:flex;align-items:center;justify-content:center}
+        .success-container{text-align:center;padding:3rem;background:white;border-radius:var(--radius);box-shadow:var(--shadow);max-width:500px;width:90%;animation:fadeInUp 0.6s ease}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        .checkmark-circle{width:100px;height:100px;background:var(--success);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 2rem;animation:scaleIn 0.5s ease 0.2s both}
+        @keyframes scaleIn{from{transform:scale(0)}to{transform:scale(1)}}
+        .checkmark{color:white;font-size:3rem}
+        h1{font-size:2rem;color:var(--dark);margin-bottom:0.5rem}.order-id{color:var(--gray);font-size:0.9rem;margin-bottom:1rem}
+        .message{color:var(--gray);line-height:1.6;margin-bottom:2rem}
+        .order-summary{background:var(--light);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem;text-align:left}
+        .summary-item{display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem}.summary-item.total{font-weight:700;font-size:1.1rem;margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid #ddd}
+        .btn{display:inline-block;padding:1rem 2.5rem;background:var(--primary);color:white;text-decoration:none;border-radius:50px;font-weight:600;font-size:1.1rem;transition:var(--transition)}.btn:hover{background:var(--primary-dark);transform:translateY(-2px);box-shadow:0 10px 25px rgba(37,99,235,0.4)}
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="checkmark-circle"><i class="fas fa-check checkmark"></i></div>
+        <h1>Order Confirmed!</h1>
+        <p class="order-id" id="orderId">Order ID: ORD00000000</p>
+        <p class="message">Thank you for your purchase! Your order has been confirmed. We'll send you a confirmation email shortly.</p>
+        <div class="order-summary" id="orderSummary"></div>
+        <a href="index.html" class="btn"><i class="fas fa-shopping-bag"></i> Continue Shopping</a>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded',()=>{const od=JSON.parse(localStorage.getItem('orderData'));if(od){document.getElementById('orderId').textContent='Order ID: '+od.orderId;const c=od.cart||[];const t=c.reduce((s,i)=>s+(i.price*i.quantity),0);document.getElementById('orderSummary').innerHTML=`<div class="summary-item"><span>Items (${c.reduce((s,i)=>s+i.quantity,0)})</span><span>AED ${t.toLocaleString()}</span></div><div class="summary-item"><span>Shipping</span><span style="color:var(--success)">FREE</span></div><div class="summary-item total"><span>Total Paid</span><span>AED ${t.toLocaleString()}</span></div>`}localStorage.removeItem('orderData')})
+    </script>
+</body>
+</html>
