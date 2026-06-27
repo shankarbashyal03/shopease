@@ -7,7 +7,6 @@
     <title>Checkout - ShopEase</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://js.stripe.com/v3/"></script>
     <style>
         :root{--primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#f59e0b;--dark:#0f172a;--dark-light:#1e293b;--light:#f8fafc;--gray:#64748b;--gray-light:#e2e8f0;--success:#16a34a;--danger:#dc2626;--warning:#f59e0b;--radius:12px;--radius-sm:8px;--shadow:0 4px 20px rgba(0,0,0,0.1);--transition:all 0.3s ease}
         *{margin:0;padding:0;box-sizing:border-box}
@@ -73,7 +72,6 @@
                     <div class="form-group"><label>Landmark <span class="optional">(Optional)</span></label><input type="text" id="landmark"></div>
                     <div class="form-group"><label>Delivery Instructions <span class="optional">(Optional)</span></label><textarea id="instructions"></textarea></div>
                 </div>
-
                 <div class="checkout-form">
                     <h2><i class="fas fa-credit-card"></i> Payment Method</h2>
                     <div class="payment-methods">
@@ -82,7 +80,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="order-summary">
                 <h3>Order Summary</h3>
                 <div id="cartMiniItems"></div>
@@ -96,12 +93,11 @@
             </div>
         </div>
     </div>
-
     <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"><div class="spinner"></div><p id="loadingText">Processing...</p></div></div>
 
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQwpj3z0y9sVujNmWiTHlzpfNt9F1TeIvPdE2sv_t4qe62rBuW75n2s09r9WAkFYorZA/exec';
-        const STRIPE_PUBLISHABLE_KEY = 'pk_live_51TgmgV3nss3O6WFl9T1GgTyoH1NL66svOsK6IvYRXfYbGxRsbjprw4UGfZ1tMcSGeJzdXH4qKwQ8ebpFLyd5FGwC00tPzgxQHA';
+        const VERCEL_API_URL = '/api/create-checkout';
         
         const UAE_DATA = {
             "Abu Dhabi":{cities:["Abu Dhabi City","Al Ain","Al Dhafra"],areas:{"Abu Dhabi City":["Al Reem Island","Al Raha","Khalifa City","MBZ City","Mussafah","Yas Island","Saadiyat Island","Baniyas"],"Al Ain":["Al Ain City","Al Jimi"],"Al Dhafra":["Ruwais","Madinat Zayed"]}},
@@ -135,7 +131,6 @@
             a.innerHTML = '<option value="">Select Area</option>';
             if (e && c && UAE_DATA[e] && UAE_DATA[e].areas[c]) UAE_DATA[e].areas[c].forEach(ar => { a.innerHTML += `<option>${ar}</option>` });
         }
-
         function selectPayment(method) {
             selectedPayment = method;
             document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
@@ -144,7 +139,6 @@
             document.getElementById('payButtonText').textContent = method === 'cod' ? 'Place Order (COD)' : 'Pay with Card';
             renderCartMini();
         }
-
         function renderCartMini() {
             const co = document.getElementById('cartMiniItems');
             let s = 0;
@@ -180,6 +174,7 @@
             
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.add('active');
+            document.getElementById('loadingText').textContent = 'Processing your order...';
             
             const oid = 'ORD' + Date.now().toString().slice(-8);
             
@@ -209,20 +204,14 @@
                 promo_code: appliedPromo ? appliedPromo.promo_code : ''
             };
 
-            // Save pending order
-            localStorage.setItem('pendingOrder', JSON.stringify(orderData));
-
             if (selectedPayment === 'cod') {
-                // Cash on Delivery - save directly
                 document.getElementById('loadingText').textContent = 'Placing COD order...';
                 try {
                     await fetch(GOOGLE_SCRIPT_URL, {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(orderData)
                     });
-                    localStorage.removeItem('cart');
-                    localStorage.removeItem('appliedPromo');
-                    localStorage.removeItem('pendingOrder');
+                    localStorage.removeItem('cart'); localStorage.removeItem('appliedPromo');
                     localStorage.setItem('orderData', JSON.stringify({ orderId: oid, cart, total: totalAmount, paymentMethod: 'cod' }));
                     window.location.href = 'sucess.html';
                 } catch (err) {
@@ -230,50 +219,49 @@
                     overlay.classList.remove('active');
                 }
             } else {
-                // Stripe Card Payment
-                document.getElementById('loadingText').textContent = 'Redirecting to secure payment...';
-                
-                const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-                
-                const lineItems = cart.map(item => ({
-                    price_data: {
-                        currency: 'aed',
-                        product_data: { 
-                            name: item.name,
-                            images: item.image ? [item.image] : []
-                        },
-                        unit_amount: Math.round(item.price * 100),
-                    },
-                    quantity: item.quantity,
-                }));
-
+                document.getElementById('loadingText').textContent = 'Connecting to secure payment...';
                 try {
-                    const { error } = await stripe.redirectToCheckout({
-                        lineItems: lineItems,
-                        mode: 'payment',
-                        successUrl: window.location.origin + '/sucess.html?session_id={CHECKOUT_SESSION_ID}&order_id=' + oid,
-                        cancelUrl: window.location.origin + '/cancel.html',
-                        customerEmail: em,
-                        clientReferenceId: oid,
-                        metadata: {
-                            order_id: oid,
-                            customer_name: fn + ' ' + ln,
-                            customer_email: em,
-                            mobile: mb,
-                            emirate: ei,
-                            city: ci,
-                            products: JSON.stringify(cart.map(i => ({ name: i.name, qty: i.quantity, price: i.price })))
-                        }
+                    const response = await fetch(VERCEL_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            items: cart.map(item => ({
+                                name: item.name,
+                                price: item.price,
+                                quantity: item.quantity,
+                                image: item.image || ''
+                            })),
+                            orderData: orderData
+                        })
                     });
                     
-                    if (error) {
-                        alert('Payment error: ' + error.message);
-                        overlay.classList.remove('active');
+                    const data = await response.json();
+                    
+                    if (data.url) {
+                        // Save order data temporarily for webhook
+                        localStorage.setItem('pendingOrder', JSON.stringify(orderData));
+                        localStorage.removeItem('cart');
+                        localStorage.removeItem('appliedPromo');
+                        // Redirect to Stripe Checkout
+                        window.location.href = data.url;
+                    } else {
+                        throw new Error('No checkout URL returned');
                     }
                 } catch (err) {
-                    console.error('Stripe error:', err);
-                    alert('Could not connect to payment gateway. Please try again.');
-                    overlay.classList.remove('active');
+                    console.error('Stripe API error:', err);
+                    // Fallback: save order directly
+                    try {
+                        await fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(orderData)
+                        });
+                        localStorage.removeItem('cart'); localStorage.removeItem('appliedPromo');
+                        localStorage.setItem('orderData', JSON.stringify({ orderId: oid, cart, total: totalAmount, paymentMethod: 'card' }));
+                        window.location.href = 'sucess.html';
+                    } catch (e) {
+                        alert('Could not process payment. Please try again.');
+                        overlay.classList.remove('active');
+                    }
                 }
             }
         }
