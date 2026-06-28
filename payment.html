@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment - ShopEase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root{--border:#e0e0e0;--text:#333;--text-light:#777;--green:#00a650;--orange:#f68b1e;--blue:#007bff;--white:#fff;--bg:#f5f5f5;--radius:6px}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+        .container{max-width:1000px;margin:0 auto;padding:15px}
+        .checkout-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+        .section{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:15px;overflow:hidden}
+        .section-header{padding:14px 18px;border-bottom:1px solid var(--border);font-weight:600;font-size:15px;display:flex;align-items:center;gap:10px;background:#fafafa}
+        .section-body{padding:18px}
+        
+        .payment-method{display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius);margin-bottom:10px;cursor:pointer;transition:all 0.2s}
+        .payment-method:hover{border-color:#ccc}
+        .payment-method.selected{border-color:var(--orange);background:#fffdf5}
+        .payment-method .radio{width:20px;height:20px;border:2px solid #ccc;border-radius:50%;flex-shrink:0;position:relative}
+        .payment-method.selected .radio{border-color:var(--orange)}
+        .payment-method.selected .radio::after{content:'';position:absolute;top:3px;left:3px;width:10px;height:10px;background:var(--orange);border-radius:50%}
+        .payment-method .method-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+        .payment-method .method-text{flex:1}.payment-method .method-text strong{display:block;font-size:13px}.payment-method .method-text span{font-size:11px;color:var(--text-light)}
+        .method-badge{background:#e8f5e9;color:var(--green);padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700}
+        
+        .card-form{margin-top:10px;padding:15px;background:#fafafa;border-radius:var(--radius);display:none}
+        .card-form.show{display:block}
+        #card-element{padding:14px 12px;border:1px solid #c4c4c4;border-radius:4px;background:white;margin-top:8px}
+        #card-element.StripeElement--focus{border-color:var(--orange);box-shadow:0 0 0 2px rgba(246,139,30,0.2)}
+        #card-errors{color:#d00;font-size:12px;margin-top:6px;min-height:18px}
+        
+        .order-product{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:12px}
+        .order-product img{width:50px;height:50px;object-fit:cover;border-radius:4px;border:1px solid #eee}
+        .order-product .prod-info{flex:1}.order-product .prod-info strong{display:block;font-size:13px}.order-product .prod-info span{color:var(--text-light)}
+        .shipping-est{background:#e8f5e9;color:var(--green);padding:8px 12px;border-radius:4px;font-size:12px;margin:10px 0;display:flex;align-items:center;gap:8px}
+        .summary-item{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+        .summary-item.total{border-top:1px solid var(--border);margin-top:8px;padding-top:12px;font-size:17px;font-weight:700}
+        .summary-item.discount{color:var(--green)}.summary-item.cod-fee{color:#f68b1e}
+        
+        .place-order-btn{width:100%;padding:14px;background:var(--orange);color:white;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;text-transform:uppercase}
+        .place-order-btn:hover{background:#e07e15}.place-order-btn:disabled{background:#ccc}
+        .payment-icons{display:flex;gap:8px;margin-top:12px;justify-content:center}
+        .payment-icons i{font-size:22px;color:#999}
+        .security-badge{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:#f0f8f0;border-radius:var(--radius);font-size:11px;color:var(--text-light);margin-top:12px;line-height:1.5}
+        .security-badge i{font-size:22px;color:var(--green);margin-top:2px}
+        .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top:2px solid white;border-radius:50%;animation:spin 0.6s linear infinite;display:none}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        @media(max-width:768px){.checkout-grid{grid-template-columns:1fr}.container{padding:10px}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="checkout-grid">
+            <!-- LEFT -->
+            <div>
+                <div class="section">
+                    <div class="section-header"><i class="fas fa-lock" style="color:var(--green)"></i> Select a payment method</div>
+                    <div class="section-body">
+                        
+                        <!-- Credit Card (Default) -->
+                        <div class="payment-method selected" onclick="selectPayment('card')" id="method-card">
+                            <div class="radio"></div>
+                            <div class="method-icon"><i class="far fa-credit-card" style="color:#1a1f71"></i></div>
+                            <div class="method-text"><strong>CREDIT / DEBIT CARD</strong><span>Pay using Mastercard/Visa/Amex</span></div>
+                        </div>
+                        <div class="card-form show" id="cardForm">
+                            <label style="font-size:12px;font-weight:600;color:var(--text-light);display:block;margin-bottom:4px">CARD NUMBER</label>
+                            <div id="card-element"></div>
+                            <div id="card-errors"></div>
+                        </div>
+                        
+                        <!-- Apple Pay -->
+                        <div class="payment-method" onclick="selectPayment('applepay')" id="method-applepay">
+                            <div class="radio"></div>
+                            <div class="method-icon"><i class="fab fa-apple" style="font-size:24px"></i></div>
+                            <div class="method-text"><strong>APPLE PAY</strong><span>Fast & secure checkout</span></div>
+                        </div>
+                        <div class="card-form" id="applePayForm">
+                            <div id="apple-pay-button" style="width:100%;height:48px;background:#000;border-radius:6px;cursor:pointer"></div>
+                            <p style="font-size:11px;color:var(--text-light);margin-top:8px;text-align:center">Apple Pay requires Safari browser on Apple device</p>
+                        </div>
+                        
+                        <!-- Tabby -->
+                        <div class="payment-method" onclick="selectPayment('tabby')" id="method-tabby">
+                            <div class="radio"></div>
+                            <div class="method-icon"><span style="background:#24b8a0;color:white;padding:2px 6px;border-radius:3px;font-weight:700;font-size:11px">tabby</span></div>
+                            <div class="method-text"><strong>TABBY</strong><span>4 interest-free payments</span></div>
+                            <span class="method-badge">No Interest</span>
+                        </div>
+                        
+                        <!-- Tamara -->
+                        <div class="payment-method" onclick="selectPayment('tamara')" id="method-tamara">
+                            <div class="radio"></div>
+                            <div class="method-icon"><span style="background:#000;color:white;padding:2px 6px;border-radius:3px;font-weight:700;font-size:11px">tamara</span></div>
+                            <div class="method-text"><strong>TAMARA</strong><span>Split in up to 4 payments</span></div>
+                        </div>
+                        
+                        <!-- COD -->
+                        <div class="payment-method" onclick="selectPayment('cod')" id="method-cod">
+                            <div class="radio"></div>
+                            <div class="method-icon"><i class="fas fa-money-bill-wave" style="color:var(--green)"></i></div>
+                            <div class="method-text"><strong>CASH ON DELIVERY</strong><span>Pay when you receive</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="security-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Your credit card details are securely encrypted and passed directly to our PCI DSS compliant Payment Gateway (Stripe). We never store your full card details. Protected by 256-bit SSL encryption.</span>
+                </div>
+            </div>
+            
+            <!-- RIGHT -->
+            <div>
+                <div class="section">
+                    <div class="section-header">Your Order Summary</div>
+                    <div class="section-body">
+                        <div id="orderProducts"></div>
+                        <div class="shipping-est"><i class="fas fa-truck"></i> FREE Delivery - 2-3 business days</div>
+                        <div class="summary-item"><span>Subtotal</span><span id="subtotal">AED 0</span></div>
+                        <div class="summary-item discount" id="promoDiscountRow" style="display:none"><span>Promo</span><span id="promoDiscount">-AED 0</span></div>
+                        <div class="summary-item"><span>Shipping</span><span style="color:var(--green)">FREE</span></div>
+                        <div class="summary-item cod-fee" id="codFeeRow" style="display:none"><span>COD Fee</span><span>+AED 20</span></div>
+                        <div class="summary-item total"><span>Total <span style="font-size:11px;color:var(--text-light)">(Inc. VAT)</span></span><span id="total">AED 0</span></div>
+                        
+                        <button class="place-order-btn" id="payButton" onclick="processPayment()">
+                            <span class="spinner" id="btnSpinner"></span>
+                            <i class="fas fa-lock"></i> PLACE ORDER
+                        </button>
+                        <p style="font-size:11px;text-align:center;margin-top:8px;color:var(--text-light)">By continuing you agree to our Terms & Conditions</p>
+                        <div class="payment-icons">
+                            <i class="fab fa-cc-visa"></i><i class="fab fa-cc-mastercard"></i><i class="fab fa-cc-amex"></i>
+                            <i class="fab fa-apple-pay"></i>
+                            <span style="font-weight:700;font-size:10px;color:#24b8a0">tabby</span>
+                            <span style="font-weight:700;font-size:10px">tamara</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwQwpj3z0y9sVujNmWiTHlzpfNt9F1TeIvPdE2sv_t4qe62rBuW75n2s09r9WAkFYorZA/exec';
+        const STRIPE_KEY='pk_live_51TgmgV3nss3O6WFl9T1GgTyoH1NL66svOsK6IvYRXfYbGxRsbjprw4UGfZ1tMcSGeJzdXH4qKwQ8ebpFLyd5FGwC00tPzgxQHA';
+        
+        let cart=[],appliedPromo=null,selectedPayment='card',stripe,card,paymentRequest;
+        
+        document.addEventListener('DOMContentLoaded',async()=>{
+            cart=JSON.parse(localStorage.getItem('cart'))||[];
+            if(cart.length===0){window.location.href='cart.html';return}
+            const p=localStorage.getItem('appliedPromo');
+            if(p)appliedPromo=JSON.parse(p);
+            
+            stripe=Stripe(STRIPE_KEY);
+            
+            // Setup Card Element
+            const elements=stripe.elements();
+            card=elements.create('card',{style:{base:{fontSize:'16px',fontFamily:'Inter,Arial,sans-serif',color:'#333','::placeholder':{color:'#aaa'},iconColor:'#666'}}});
+            card.mount('#card-element');
+            card.on('change',e=>{document.getElementById('card-errors').textContent=e.error?e.error.message:''});
+            
+            // Setup Apple Pay
+            paymentRequest=stripe.paymentRequest({
+                country:'AE',
+                currency:'aed',
+                total:{label:'ShopEase Order',amount:1000},
+                requestPayerName:true,
+                requestPayerEmail:true,
+            });
+            
+            const prButton=elements.create('paymentRequestButton',{paymentRequest,style:{paymentRequestButton:{type:'buy',theme:'dark',height:'48px'}}});
+            
+            paymentRequest.canMakePayment().then(result=>{
+                if(result&&result.applePay){
+                    prButton.mount('#apple-pay-button');
+                }else{
+                    document.getElementById('apple-pay-button').innerHTML='<p style=padding:12px;color:#888;text-align:center>Apple Pay not available on this device/browser</p>';
+                }
+            });
+            
+            paymentRequest.on('paymentmethod',async(ev)=>{
+                // Apple Pay selected - process payment
+                const address=JSON.parse(localStorage.getItem('shippingAddress'));
+                if(!address){alert('Fill address first');window.location.href='checkout.html';return}
+                
+                let s=cart.reduce((sum,i)=>sum+(i.price*i.quantity),0),pd=0;
+                if(appliedPromo&&appliedPromo.active){
+                    const ids=appliedPromo.excluded_products?appliedPromo.excluded_products.split(',').map(id=>id.trim().toUpperCase()):[];
+                    cart.forEach(i=>{if(!ids.includes(i.productId.toUpperCase())){if(appliedPromo.discount_type==='percentage')pd+=(i.price*i.quantity)*(appliedPromo.discount_value/100);else pd+=appliedPromo.discount_value*i.quantity}});
+                }
+                const total=Math.round(s-pd);
+                
+                try{
+                    const res=await fetch('/api/create-payment-intent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount:total*100,currency:'aed'})});
+                    const data=await res.json();
+                    
+                    const {error,paymentIntent}=await stripe.confirmCardPayment(data.clientSecret,{payment_method:ev.paymentMethod.id},{handleActions:false});
+                    
+                    if(error){ev.complete('fail');alert(error.message)}
+                    else{
+                        ev.complete('success');
+                        const oid='ORD'+Date.now().toString().slice(-8);
+                        const orderData={order_id:oid,firstName:address.firstName,lastName:address.lastName,mobile:address.mobile,email:address.email,customer_name:address.firstName+' '+address.lastName,customer_email:address.email,emirate:address.emirate,city:address.city,area:address.area,street:address.street,building:address.building,apartment:address.apartment,floor:address.floor,landmark:address.landmark,instructions:address.instructions,products:cart.map(i=>({product_id:i.productId,name:i.name,price:i.price,quantity:i.quantity})),total_amount:total,payment_method:'applepay',payment_id:paymentIntent.id};
+                        await fetch(GOOGLE_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(orderData)});
+                        localStorage.removeItem('cart');localStorage.removeItem('appliedPromo');localStorage.removeItem('shippingAddress');
+                        localStorage.setItem('orderData',JSON.stringify({orderId:oid,total,paymentMethod:'applepay'}));
+                        window.location.href='sucess.html';
+                    }
+                }catch(e){ev.complete('fail');alert('Payment failed')}
+            });
+            
+            renderOrderProducts();
+            updateSummary();
+        });
+        
+        function selectPayment(method){
+            selectedPayment=method;
+            document.querySelectorAll('.payment-method').forEach(m=>m.classList.remove('selected'));
+            document.getElementById('method-'+method).classList.add('selected');
+            document.getElementById('cardForm').classList.toggle('show',method==='card');
+            document.getElementById('applePayForm').classList.toggle('show',method==='applepay');
+            updateSummary();
+        }
+        
+        function renderOrderProducts(){
+            document.getElementById('orderProducts').innerHTML=cart.map(item=>`
+                <div class="order-product">
+                    <img src="${item.image||'https://placehold.co/50x50'}" alt="${item.name}" onerror="this.src='https://placehold.co/50x50'">
+                    <div class="prod-info"><strong>${item.name}</strong><span>Qty: ${item.quantity}</span></div>
+                    <strong>AED ${(item.price*item.quantity).toLocaleString()}</strong>
+                </div>
+            `).join('');
+        }
+        
+        function updateSummary(){
+            let s=cart.reduce((sum,i)=>sum+(i.price*i.quantity),0),pd=0;
+            if(appliedPromo&&appliedPromo.active){
+                const ids=appliedPromo.excluded_products?appliedPromo.excluded_products.split(',').map(id=>id.trim().toUpperCase()):[];
+                cart.forEach(i=>{if(!ids.includes(i.productId.toUpperCase())){if(appliedPromo.discount_type==='percentage')pd+=(i.price*i.quantity)*(appliedPromo.discount_value/100);else pd+=appliedPromo.discount_value*i.quantity}});
+            }
+            const cod=(selectedPayment==='cod')?20:0;
+            const t=s-pd+cod;
+            document.getElementById('subtotal').textContent='AED '+s.toLocaleString();
+            document.getElementById('promoDiscountRow').style.display=pd>0?'flex':'none';
+            if(pd>0)document.getElementById('promoDiscount').textContent='-AED '+Math.round(pd).toLocaleString();
+            document.getElementById('codFeeRow').style.display=cod>0?'flex':'none';
+            document.getElementById('total').textContent='AED '+Math.round(t).toLocaleString();
+        }
+
+        async function processPayment(){
+            const address=JSON.parse(localStorage.getItem('shippingAddress'));
+            if(!address){alert('Please fill shipping address first');window.location.href='checkout.html';return}
+            
+            const btn=document.getElementById('payButton');btn.disabled=true;document.getElementById('btnSpinner').style.display='inline-block';
+            
+            const oid='ORD'+Date.now().toString().slice(-8);
+            let s=cart.reduce((sum,i)=>sum+(i.price*i.quantity),0),pd=0;
+            if(appliedPromo&&appliedPromo.active){
+                const ids=appliedPromo.excluded_products?appliedPromo.excluded_products.split(',').map(id=>id.trim().toUpperCase()):[];
+                cart.forEach(i=>{if(!ids.includes(i.productId.toUpperCase())){if(appliedPromo.discount_type==='percentage')pd+=(i.price*i.quantity)*(appliedPromo.discount_value/100);else pd+=appliedPromo.discount_value*i.quantity}});
+            }
+            const cod=(selectedPayment==='cod')?20:0;
+            const total=Math.round(s-pd+cod);
+            const orderData={order_id:oid,firstName:address.firstName,lastName:address.lastName,mobile:address.mobile,email:address.email,customer_name:address.firstName+' '+address.lastName,customer_email:address.email,emirate:address.emirate,city:address.city,area:address.area,street:address.street,building:address.building,apartment:address.apartment,floor:address.floor,landmark:address.landmark,instructions:address.instructions,products:cart.map(i=>({product_id:i.productId,name:i.name,price:i.price,quantity:i.quantity})),total_amount:total,payment_method:selectedPayment,promo_code:appliedPromo?appliedPromo.promo_code:''};
+
+            if(selectedPayment==='cod'||selectedPayment==='tabby'||selectedPayment==='tamara'){
+                try{
+                    await fetch(GOOGLE_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(orderData)});
+                    localStorage.removeItem('cart');localStorage.removeItem('appliedPromo');localStorage.removeItem('shippingAddress');
+                    localStorage.setItem('orderData',JSON.stringify({orderId:oid,total,paymentMethod:selectedPayment}));
+                    window.location.href='sucess.html';
+                }catch(e){alert('Error');btn.disabled=false;document.getElementById('btnSpinner').style.display='none'}
+                return;
+            }
+
+            // Card Payment via Stripe
+            try{
+                const res=await fetch('/api/create-payment-intent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount:total*100,currency:'aed'})});
+                const data=await res.json();
+                if(!data.clientSecret)throw new Error('No client secret');
+                
+                const {error,paymentIntent}=await stripe.confirmCardPayment(data.clientSecret,{payment_method:{card,billing_details:{name:address.firstName+' '+address.lastName,email:address.email}}});
+                
+                if(error){document.getElementById('card-errors').textContent=error.message;btn.disabled=false;document.getElementById('btnSpinner').style.display='none'}
+                else if(paymentIntent.status==='succeeded'){
+                    orderData.payment_id=paymentIntent.id;
+                    await fetch(GOOGLE_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(orderData)});
+                    localStorage.removeItem('cart');localStorage.removeItem('appliedPromo');localStorage.removeItem('shippingAddress');
+                    localStorage.setItem('orderData',JSON.stringify({orderId:oid,total,paymentMethod:'card'}));
+                    window.location.href='sucess.html';
+                }
+            }catch(e){alert('Payment failed');btn.disabled=false;document.getElementById('btnSpinner').style.display='none'}
+        }
+    </script>
+</body>
+</html>

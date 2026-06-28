@@ -4,21 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>Checkout - ShopEase</title>
+    <title>Checkout - Shipping Address</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root{--primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#f59e0b;--dark:#0f172a;--dark-light:#1e293b;--light:#f8fafc;--gray:#64748b;--gray-light:#e2e8f0;--success:#16a34a;--danger:#dc2626;--warning:#f59e0b;--radius:12px;--radius-sm:8px;--shadow:0 4px 20px rgba(0,0,0,0.1);--transition:all 0.3s ease}
+        :root{--primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#f59e0b;--dark:#0f172a;--dark-light:#1e293b;--light:#f8fafc;--gray:#64748b;--gray-light:#e2e8f0;--success:#16a34a;--danger:#dc2626;--radius:12px;--radius-sm:8px;--shadow:0 4px 20px rgba(0,0,0,0.1);--transition:all 0.3s ease}
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Inter',sans-serif;background:#f1f5f9;color:var(--dark);line-height:1.6}
+        body{font-family:'Inter',sans-serif;background:#f1f5f9;color:var(--dark)}
         .header{background:var(--dark);padding:1rem 2rem;position:sticky;top:0;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.3)}
         .header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
         .logo{font-size:1.8rem;font-weight:800;color:white;text-decoration:none;display:flex;align-items:center;gap:0.5rem}
         .logo i{color:var(--secondary);font-size:2rem}.logo span{color:var(--secondary)}
-        .secure-badge{color:#94a3b8;font-size:0.85rem;display:flex;align-items:center;gap:0.5rem}.secure-badge i{color:var(--success)}
-        .container{max-width:1000px;margin:2rem auto;padding:0 2rem}
-        .checkout-grid{display:grid;grid-template-columns:1fr 380px;gap:2rem;align-items:start}
-        .checkout-form{background:white;border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+        .container{max-width:700px;margin:2rem auto;padding:0 2rem}
+        .checkout-form{background:white;border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow)}
         .checkout-form h2{font-size:1.3rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid var(--gray-light);display:flex;align-items:center;gap:0.5rem}
         .checkout-form h2 i{color:var(--primary)}
         .section-title{font-size:1rem;font-weight:600;margin:1.5rem 0 1rem;color:var(--dark)}
@@ -30,75 +28,35 @@
         .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
         .form-group textarea{resize:vertical;min-height:80px}
         .required::after{content:" *";color:var(--danger)}
-        .payment-methods{margin-top:1rem}
-        .payment-option{display:flex;align-items:center;gap:1rem;padding:1rem;border:2px solid var(--gray-light);border-radius:var(--radius-sm);margin-bottom:0.8rem;cursor:pointer;transition:var(--transition)}
-        .payment-option:hover{border-color:var(--primary);background:#f8fafc}
-        .payment-option.selected{border-color:var(--primary);background:#eff6ff}
-        .payment-option input[type="radio"]{accent-color:var(--primary);width:20px;height:20px;cursor:pointer}
-        .payment-option-content{flex:1}.payment-option-content strong{display:block;margin-bottom:0.2rem}.payment-option-content small{color:var(--gray)}
-        .payment-option i{font-size:1.5rem;color:var(--primary)}
-        .cod-fee{color:var(--warning);font-weight:600}
-        .order-summary{background:white;border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);position:sticky;top:100px}
-        .order-summary h3{font-size:1.1rem;margin-bottom:1rem;padding-bottom:0.8rem;border-bottom:2px solid var(--gray-light)}
-        .cart-mini-item{display:flex;gap:0.8rem;margin-bottom:0.8rem;padding-bottom:0.8rem;border-bottom:1px solid var(--gray-light)}
-        .cart-mini-item img{width:50px;height:50px;border-radius:6px;object-fit:cover}
-        .cart-mini-details{flex:1;font-size:0.85rem}.cart-mini-details .name{font-weight:600;margin-bottom:0.2rem}.cart-mini-details .qty{color:var(--gray)}.cart-mini-details .price{color:var(--success);font-weight:600}
-        .summary-row{display:flex;justify-content:space-between;margin-bottom:0.6rem;font-size:0.9rem}
-        .summary-row.total{font-size:1.2rem;font-weight:700;margin-top:0.8rem;padding-top:0.8rem;border-top:2px solid var(--gray-light)}.summary-row.discount{color:var(--success);font-weight:600}.summary-row.cod{color:var(--warning)}
-        .pay-btn{width:100%;padding:1rem;background:var(--success);color:white;border:none;border-radius:var(--radius-sm);font-size:1.1rem;font-weight:600;cursor:pointer;margin-top:1.5rem;transition:var(--transition);font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:0.5rem}
-        .pay-btn:hover{background:#15803d;transform:translateY(-2px)}.pay-btn:disabled{background:var(--gray);cursor:not-allowed;transform:none}
+        .btn{display:block;width:100%;padding:1rem;background:var(--primary);color:white;border:none;border-radius:var(--radius-sm);font-size:1.1rem;font-weight:600;cursor:pointer;transition:var(--transition);font-family:'Inter',sans-serif;text-align:center;text-decoration:none;margin-top:1.5rem}
+        .btn:hover{background:var(--primary-dark);transform:translateY(-2px)}
         .back-link{display:block;text-align:center;margin-top:1rem;color:var(--gray);text-decoration:none;font-size:0.9rem}.back-link:hover{color:var(--primary)}
-        .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:2000}.loading-overlay.active{display:flex}
-        .loading-spinner{background:white;padding:2rem;border-radius:var(--radius);text-align:center}.spinner{width:40px;height:40px;border:4px solid var(--gray-light);border-top:4px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem}
-        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-        @media(max-width:768px){.checkout-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.container{padding:0 1rem}}
+        @media(max-width:768px){.form-row{grid-template-columns:1fr}.container{padding:0 1rem}}
     </style>
 </head>
 <body>
-    <header class="header"><div class="header-inner"><a href="index.html" class="logo"><i class="fas fa-shopping-bag"></i>Shop<span>Ease</span></a><div class="secure-badge"><i class="fas fa-lock"></i> Secure Checkout</div></div></header>
+    <header class="header"><div class="header-inner"><a href="index.html" class="logo"><i class="fas fa-shopping-bag"></i>Shop<span>Ease</span></a></div></header>
     
     <div class="container">
-        <div class="checkout-grid">
-            <div>
-                <div class="checkout-form">
-                    <h2><i class="fas fa-map-marker-alt"></i> Shipping Address</h2>
-                    <div class="form-row"><div class="form-group"><label class="required">First Name</label><input type="text" id="firstName" required></div><div class="form-group"><label class="required">Last Name</label><input type="text" id="lastName" required></div></div>
-                    <div class="form-row"><div class="form-group"><label class="required">Mobile</label><input type="tel" id="mobile" required placeholder="+971 5X XXX XXXX"></div><div class="form-group"><label class="required">Email</label><input type="email" id="email" required></div></div>
-                    <div class="section-title">📍 UAE Address</div>
-                    <div class="form-row"><div class="form-group"><label class="required">Emirate</label><select id="emirate" required onchange="updateCities()"><option value="">Select</option><option>Abu Dhabi</option><option>Dubai</option><option>Sharjah</option><option>Ajman</option><option>Ras Al Khaimah</option><option>Fujairah</option><option>Umm Al Quwain</option></select></div><div class="form-group"><label class="required">City</label><select id="city" required onchange="updateAreas()"><option value="">Select</option></select></div></div>
-                    <div class="form-group"><label>Area <span class="optional">(Optional)</span></label><select id="area"><option value="">Select</option></select></div>
-                    <div class="form-row"><div class="form-group"><label>Street <span class="optional">(Optional)</span></label><input type="text" id="street"></div><div class="form-group"><label>Building/Villa <span class="optional">(Optional)</span></label><input type="text" id="building"></div></div>
-                    <div class="form-row"><div class="form-group"><label>Apartment <span class="optional">(Optional)</span></label><input type="text" id="apartment"></div><div class="form-group"><label>Floor <span class="optional">(Optional)</span></label><input type="text" id="floor"></div></div>
-                    <div class="form-group"><label>Landmark <span class="optional">(Optional)</span></label><input type="text" id="landmark"></div>
-                    <div class="form-group"><label>Delivery Instructions <span class="optional">(Optional)</span></label><textarea id="instructions"></textarea></div>
-                </div>
-                <div class="checkout-form">
-                    <h2><i class="fas fa-credit-card"></i> Payment Method</h2>
-                    <div class="payment-methods">
-                        <label class="payment-option selected" id="cardOption"><input type="radio" name="paymentMethod" value="card" checked onchange="selectPayment('card')"><i class="fab fa-cc-visa"></i><div class="payment-option-content"><strong>Credit / Debit Card</strong><small>Pay securely with Stripe</small></div></label>
-                        <label class="payment-option" id="codOption"><input type="radio" name="paymentMethod" value="cod" onchange="selectPayment('cod')"><i class="fas fa-money-bill-wave"></i><div class="payment-option-content"><strong>Cash on Delivery</strong><small>Pay when you receive</small><span class="cod-fee"> +AED 20 COD fee</span></div></label>
-                    </div>
-                </div>
-            </div>
-            <div class="order-summary">
-                <h3>Order Summary</h3>
-                <div id="cartMiniItems"></div>
-                <div class="summary-row"><span>Subtotal</span><span id="summarySubtotal">AED 0</span></div>
-                <div class="summary-row discount" id="promoDiscountRow" style="display:none"><span>Promo Discount</span><span id="summaryDiscount">-AED 0</span></div>
-                <div class="summary-row"><span>Shipping</span><span style="color:var(--success)">FREE</span></div>
-                <div class="summary-row cod" id="codFeeRow" style="display:none"><span>COD Fee</span><span id="codFee">+AED 20</span></div>
-                <div class="summary-row total"><span>Total</span><span id="summaryTotal">AED 0</span></div>
-                <button class="pay-btn" id="payButton" onclick="processPayment()"><i class="fas fa-lock"></i> <span id="payButtonText">Pay with Card</span></button>
-                <a href="cart.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Cart</a>
-            </div>
+        <div class="checkout-form">
+            <h2><i class="fas fa-map-marker-alt"></i> Shipping Address</h2>
+            <form id="addressForm" onsubmit="saveAddress(event)">
+                <div class="form-row"><div class="form-group"><label class="required">First Name</label><input type="text" id="firstName" required></div><div class="form-group"><label class="required">Last Name</label><input type="text" id="lastName" required></div></div>
+                <div class="form-row"><div class="form-group"><label class="required">Mobile</label><input type="tel" id="mobile" required placeholder="+971 5X XXX XXXX"></div><div class="form-group"><label class="required">Email</label><input type="email" id="email" required></div></div>
+                <div class="section-title">📍 UAE Address</div>
+                <div class="form-row"><div class="form-group"><label class="required">Emirate</label><select id="emirate" required onchange="updateCities()"><option value="">Select</option><option>Abu Dhabi</option><option>Dubai</option><option>Sharjah</option><option>Ajman</option><option>Ras Al Khaimah</option><option>Fujairah</option><option>Umm Al Quwain</option></select></div><div class="form-group"><label class="required">City</label><select id="city" required onchange="updateAreas()"><option value="">Select</option></select></div></div>
+                <div class="form-group"><label>Area <span class="optional">(Optional)</span></label><select id="area"><option value="">Select</option></select></div>
+                <div class="form-row"><div class="form-group"><label>Street <span class="optional">(Optional)</span></label><input type="text" id="street"></div><div class="form-group"><label>Building/Villa <span class="optional">(Optional)</span></label><input type="text" id="building"></div></div>
+                <div class="form-row"><div class="form-group"><label>Apartment <span class="optional">(Optional)</span></label><input type="text" id="apartment"></div><div class="form-group"><label>Floor <span class="optional">(Optional)</span></label><input type="text" id="floor"></div></div>
+                <div class="form-group"><label>Landmark <span class="optional">(Optional)</span></label><input type="text" id="landmark"></div>
+                <div class="form-group"><label>Delivery Instructions <span class="optional">(Optional)</span></label><textarea id="instructions"></textarea></div>
+                <button type="submit" class="btn">Continue to Payment <i class="fas fa-arrow-right"></i></button>
+            </form>
+            <a href="cart.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Cart</a>
         </div>
     </div>
-    <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"><div class="spinner"></div><p id="loadingText">Processing...</p></div></div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQwpj3z0y9sVujNmWiTHlzpfNt9F1TeIvPdE2sv_t4qe62rBuW75n2s09r9WAkFYorZA/exec';
-        const VERCEL_API_URL = '/api/create-checkout';
-        
         const UAE_DATA = {
             "Abu Dhabi":{cities:["Abu Dhabi City","Al Ain","Al Dhafra"],areas:{"Abu Dhabi City":["Al Reem Island","Al Raha","Khalifa City","MBZ City","Mussafah","Yas Island","Saadiyat Island","Baniyas"],"Al Ain":["Al Ain City","Al Jimi"],"Al Dhafra":["Ruwais","Madinat Zayed"]}},
             "Dubai":{cities:["Dubai City"],areas:{"Dubai City":["Downtown Dubai","Business Bay","Dubai Marina","JBR","JLT","Palm Jumeirah","Jumeirah","Al Barsha","Arabian Ranches","Dubai Hills Estate","Mirdif","International City","Silicon Oasis","Deira","Bur Dubai","Karama","JVC","JVT","Dubai Creek Harbour"]}},
@@ -109,161 +67,29 @@
             "Umm Al Quwain":{cities:["Umm Al Quwain City"],areas:{"Umm Al Quwain City":["Al Salamah","Al Raas","Falaj Al Mualla"]}}
         };
 
-        let cart = [], appliedPromo = null, selectedPayment = 'card';
+        function updateCities(){const e=document.getElementById('emirate').value;const c=document.getElementById('city'),a=document.getElementById('area');c.innerHTML='<option value="">Select City</option>';a.innerHTML='<option value="">Select Area</option>';if(e&&UAE_DATA[e])UAE_DATA[e].cities.forEach(city=>{c.innerHTML+=`<option>${city}</option>`})}
+        function updateAreas(){const e=document.getElementById('emirate').value,c=document.getElementById('city').value;const a=document.getElementById('area');a.innerHTML='<option value="">Select Area</option>';if(e&&c&&UAE_DATA[e]&&UAE_DATA[e].areas[c])UAE_DATA[e].areas[c].forEach(ar=>{a.innerHTML+=`<option>${ar}</option>`})}
 
-        document.addEventListener('DOMContentLoaded', () => {
-            cart = JSON.parse(localStorage.getItem('cart')) || [];
-            if (cart.length === 0) { window.location.href = 'cart.html'; return; }
-            const p = localStorage.getItem('appliedPromo');
-            if (p) appliedPromo = JSON.parse(p);
-            renderCartMini();
-        });
-
-        function updateCities() {
-            const e = document.getElementById('emirate').value;
-            const c = document.getElementById('city'), a = document.getElementById('area');
-            c.innerHTML = '<option value="">Select City</option>'; a.innerHTML = '<option value="">Select Area</option>';
-            if (e && UAE_DATA[e]) UAE_DATA[e].cities.forEach(city => { c.innerHTML += `<option>${city}</option>` });
-        }
-        function updateAreas() {
-            const e = document.getElementById('emirate').value, c = document.getElementById('city').value;
-            const a = document.getElementById('area');
-            a.innerHTML = '<option value="">Select Area</option>';
-            if (e && c && UAE_DATA[e] && UAE_DATA[e].areas[c]) UAE_DATA[e].areas[c].forEach(ar => { a.innerHTML += `<option>${ar}</option>` });
-        }
-        function selectPayment(method) {
-            selectedPayment = method;
-            document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
-            document.getElementById(method + 'Option').classList.add('selected');
-            document.getElementById('codFeeRow').style.display = (method === 'cod') ? 'flex' : 'none';
-            document.getElementById('payButtonText').textContent = method === 'cod' ? 'Place Order (COD)' : 'Pay with Card';
-            renderCartMini();
-        }
-        function renderCartMini() {
-            const co = document.getElementById('cartMiniItems');
-            let s = 0;
-            co.innerHTML = cart.map(item => {
-                const it = item.price * item.quantity; s += it;
-                let img = item.image || '';
-                if (img.includes('drive.google.com/uc')) { const id = img.split('id=')[1]; if (id) img = 'https://drive.google.com/thumbnail?id=' + id + '&sz=w100'; }
-                return `<div class="cart-mini-item"><img src="${img || 'https://placehold.co/50x50'}" alt="${item.name}" onerror="this.src='https://placehold.co/50x50/1e293b/ffffff?text=Item'"><div class="cart-mini-details"><div class="name">${item.name}</div><div class="qty">Qty: ${item.quantity}</div><div class="price">AED ${it.toLocaleString()}</div></div></div>`;
-            }).join('');
-            let pd = 0;
-            if (appliedPromo && appliedPromo.active) {
-                const ids = appliedPromo.excluded_products ? appliedPromo.excluded_products.split(',').map(id => id.trim().toUpperCase()) : [];
-                cart.forEach(item => { if (!ids.includes(item.productId.toUpperCase())) { if (appliedPromo.discount_type === 'percentage') pd += (item.price * item.quantity) * (appliedPromo.discount_value / 100); else pd += appliedPromo.discount_value * item.quantity; } });
-            }
-            const codFee = (selectedPayment === 'cod') ? 20 : 0;
-            const t = s - pd + codFee;
-            document.getElementById('summarySubtotal').textContent = 'AED ' + s.toLocaleString();
-            document.getElementById('promoDiscountRow').style.display = pd > 0 ? 'flex' : 'none';
-            if (pd > 0) document.getElementById('summaryDiscount').textContent = '-AED ' + Math.round(pd).toLocaleString();
-            document.getElementById('codFeeRow').style.display = codFee > 0 ? 'flex' : 'none';
-            document.getElementById('summaryTotal').textContent = 'AED ' + Math.round(t).toLocaleString();
-        }
-
-        async function processPayment() {
-            const fn = document.getElementById('firstName').value.trim();
-            const ln = document.getElementById('lastName').value.trim();
-            const mb = document.getElementById('mobile').value.trim();
-            const em = document.getElementById('email').value.trim();
-            const ei = document.getElementById('emirate').value;
-            const ci = document.getElementById('city').value;
-            
-            if (!fn || !ln || !mb || !em || !ei || !ci) { alert('Please fill all required fields marked with *'); return; }
-            
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.classList.add('active');
-            document.getElementById('loadingText').textContent = 'Processing your order...';
-            
-            const oid = 'ORD' + Date.now().toString().slice(-8);
-            
-            let subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-            let promoDiscount = 0;
-            if (appliedPromo && appliedPromo.active) {
-                const ids = appliedPromo.excluded_products ? appliedPromo.excluded_products.split(',').map(id => id.trim().toUpperCase()) : [];
-                cart.forEach(item => { if (!ids.includes(item.productId.toUpperCase())) { if (appliedPromo.discount_type === 'percentage') promoDiscount += (item.price * item.quantity) * (appliedPromo.discount_value / 100); else promoDiscount += appliedPromo.discount_value * item.quantity; } });
-            }
-            const codFee = (selectedPayment === 'cod') ? 20 : 0;
-            const totalAmount = Math.round(subtotal - promoDiscount + codFee);
-
-            const orderData = {
-                order_id: oid, firstName: fn, lastName: ln, mobile: mb, email: em,
-                customer_name: fn + ' ' + ln, customer_email: em,
-                emirate: ei, city: ci,
-                area: document.getElementById('area').value,
-                street: document.getElementById('street').value,
-                building: document.getElementById('building').value,
-                apartment: document.getElementById('apartment').value,
-                floor: document.getElementById('floor').value,
-                landmark: document.getElementById('landmark').value,
-                instructions: document.getElementById('instructions').value,
-                products: cart.map(i => ({ product_id: i.productId, name: i.name, price: i.price, quantity: i.quantity })),
-                total_amount: totalAmount,
-                payment_method: selectedPayment,
-                promo_code: appliedPromo ? appliedPromo.promo_code : ''
+        function saveAddress(event){
+            event.preventDefault();
+            const address={
+                firstName:document.getElementById('firstName').value.trim(),
+                lastName:document.getElementById('lastName').value.trim(),
+                mobile:document.getElementById('mobile').value.trim(),
+                email:document.getElementById('email').value.trim(),
+                emirate:document.getElementById('emirate').value,
+                city:document.getElementById('city').value,
+                area:document.getElementById('area').value,
+                street:document.getElementById('street').value,
+                building:document.getElementById('building').value,
+                apartment:document.getElementById('apartment').value,
+                floor:document.getElementById('floor').value,
+                landmark:document.getElementById('landmark').value,
+                instructions:document.getElementById('instructions').value
             };
-
-            if (selectedPayment === 'cod') {
-                document.getElementById('loadingText').textContent = 'Placing COD order...';
-                try {
-                    await fetch(GOOGLE_SCRIPT_URL, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(orderData)
-                    });
-                    localStorage.removeItem('cart'); localStorage.removeItem('appliedPromo');
-                    localStorage.setItem('orderData', JSON.stringify({ orderId: oid, cart, total: totalAmount, paymentMethod: 'cod' }));
-                    window.location.href = 'sucess.html';
-                } catch (err) {
-                    alert('Error placing order. Please try again.');
-                    overlay.classList.remove('active');
-                }
-            } else {
-                document.getElementById('loadingText').textContent = 'Connecting to secure payment...';
-                try {
-                    const response = await fetch(VERCEL_API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            items: cart.map(item => ({
-                                name: item.name,
-                                price: item.price,
-                                quantity: item.quantity,
-                                image: item.image || ''
-                            })),
-                            orderData: orderData
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.url) {
-                        // Save order data temporarily for webhook
-                        localStorage.setItem('pendingOrder', JSON.stringify(orderData));
-                        localStorage.removeItem('cart');
-                        localStorage.removeItem('appliedPromo');
-                        // Redirect to Stripe Checkout
-                        window.location.href = data.url;
-                    } else {
-                        throw new Error('No checkout URL returned');
-                    }
-                } catch (err) {
-                    console.error('Stripe API error:', err);
-                    // Fallback: save order directly
-                    try {
-                        await fetch(GOOGLE_SCRIPT_URL, {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(orderData)
-                        });
-                        localStorage.removeItem('cart'); localStorage.removeItem('appliedPromo');
-                        localStorage.setItem('orderData', JSON.stringify({ orderId: oid, cart, total: totalAmount, paymentMethod: 'card' }));
-                        window.location.href = 'sucess.html';
-                    } catch (e) {
-                        alert('Could not process payment. Please try again.');
-                        overlay.classList.remove('active');
-                    }
-                }
-            }
+            if(!address.firstName||!address.lastName||!address.mobile||!address.email||!address.emirate||!address.city){alert('Please fill all required fields');return}
+            localStorage.setItem('shippingAddress',JSON.stringify(address));
+            window.location.href='payment.html';
         }
     </script>
 </body>
